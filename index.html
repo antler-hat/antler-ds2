@@ -559,25 +559,12 @@
     const WAVEFORMS = ['sine', 'square', 'sawtooth', 'noise'];
     const WAVEFORM_INDICATORS = ['∿', '⨅', '⩘', '░'];
 
-    const params = {
-        voices: Array.from({ length: NUM_VOICES }, (_, i) => ({ // Default values, adjusted for example
-            pitch: [60, 180, 800, 3500][i],
-            wave: [0, 3, 3, 3][i],
-            level: [0.8, 0.7, 0.7, 0.6][i],
-            cutoff: [40, 100, 200, 5000][i], // High-pass defaults
-            env: {
-                attack: [0.01, 0.005, 0.002, 0.001][i],
-                decay: [0.15, 0.12, 0.08, 0.05][i],
-                sustain: 0,
-                release: [0.1, 0.05, 0.1, 0.03][i]
-            }
+    const params = { // Default parameters (unchanged)
+        voices: Array.from({ length: NUM_VOICES }, (_, i) => ({
+            pitch: [60, 180, 800, 3500][i], wave: [0, 3, 3, 3][i], level: [0.8, 0.7, 0.7, 0.6][i], cutoff: [40, 100, 200, 5000][i],
+            env: { attack: [0.01, 0.005, 0.002, 0.001][i], decay: [0.15, 0.12, 0.08, 0.05][i], sustain: 0, release: [0.1, 0.05, 0.1, 0.03][i] }
         })),
-        effects: {
-            distortion: { amount: 0 },
-            delay: { time: 0.15, feedback: 0.4, level: 0 },
-            reverb: { level: 0 }
-        },
-        masterVolume: 0.6
+        effects: { distortion: { amount: 0 }, delay: { time: 0.15, feedback: 0.4, level: 0 }, reverb: { level: 0 } }, masterVolume: 0.6
     };
 
     let activeSources = Array.from({ length: NUM_VOICES }, () => []);
@@ -586,18 +573,14 @@
     const keyToVoiceIndex = { 'KeyA': 0, 'KeyS': 1, 'KeyD': 2, 'KeyF': 3 };
 
     // ----- SEQUENCER STATE -----
-    const sequencer = {
-        steps: Array.from({ length: NUM_VOICES }, () => Array(NUM_STEPS).fill(0)),
-        tempo: 120.0,
-        currentStep: 0,
-        isPlaying: false,
-        startTime: 0,           // AudioContext time when sequencer started
-        nextStepTime: 0,        // AudioContext time of the next step
-        stepDuration: 0,        // Duration of a 16th note in seconds
-        lookahead: 25.0,        // How often to schedule notes (ms)
-        scheduleAheadTime: 0.1, // How far ahead to schedule notes (s)
-        timerId: null           // ID from setTimeout
+    const sequencer = { // (unchanged)
+        steps: Array.from({ length: NUM_VOICES }, () => Array(NUM_STEPS).fill(0)), tempo: 120.0, currentStep: 0, isPlaying: false, startTime: 0, nextStepTime: 0, stepDuration: 0, lookahead: 25.0, scheduleAheadTime: 0.1, timerId: null
     };
+
+    // ----- SEQUENCER DRAG STATE -----
+    let isDraggingSeqStep = false;
+    let dragSeqStepMode = null; // 'activate' or 'deactivate'
+    let dragSeqStepVoice = -1;
 
     // ----- UTILITY FUNCTIONS -----
     // (createNoiseBuffer, makeDistortionCurve, createReverbImpulse, formatKnobValue, updateKnobValueDisplay - unchanged)
@@ -614,94 +597,13 @@
         if (audioContext.state === 'running') { if (!isAudioResumed) { isAudioResumed = true; masterGain.gain.linearRampToValueAtTime(params.masterVolume, audioContext.currentTime + 0.05); } return true; }
         if (audioContext.state === 'suspended') { try { await audioContext.resume(); if (audioContext.state === 'running') { console.log("AudioContext Resumed."); isAudioResumed = true; masterGain.gain.linearRampToValueAtTime(params.masterVolume, audioContext.currentTime + 0.05); return true; } else { isAudioResumed = false; return false; } } catch (e) { console.error("Error resuming:", e); isAudioResumed = false; return false; } } return false;
     }
-
-    async function initAudio() { // (unchanged from previous version with distortion fix)
-        if (isAudioInitialized) return;
-        console.log("Initializing AudioContext...");
-        try {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)(); if (!audioContext) throw new Error("Web Audio API not supported."); isAudioInitialized = true; console.log("Initial State:", audioContext.state);
-            masterGain = audioContext.createGain(); masterGain.gain.value = 0; effectsInput = audioContext.createGain();
-            distortionPreGain = audioContext.createGain(); distortion = audioContext.createWaveShaper(); delay = audioContext.createDelay(2.0); delayFeedbackGain = audioContext.createGain(); delayWetGain = audioContext.createGain(); reverb = audioContext.createConvolver(); reverbWetGain = audioContext.createGain();
-            noiseBuffer = createNoiseBuffer(audioContext); reverb.buffer = createReverbImpulse(audioContext);
-            effectsInput.connect(distortionPreGain); distortionPreGain.connect(distortion); distortion.connect(masterGain);
-            distortion.connect(delay); delay.connect(delayFeedbackGain); delayFeedbackGain.connect(delay); delay.connect(delayWetGain); delayWetGain.connect(masterGain);
-            distortion.connect(reverb); reverb.connect(reverbWetGain); reverbWetGain.connect(masterGain);
-            masterGain.connect(audioContext.destination);
-            updateParameterValue('effects.distortion.amount', params.effects.distortion.amount, true); updateParameterValue('effects.delay.time', params.effects.delay.time, true); updateParameterValue('effects.delay.feedback', params.effects.delay.feedback, true); updateParameterValue('effects.delay.level', params.effects.delay.level, true); updateParameterValue('effects.reverb.level', params.effects.reverb.level, true); updateParameterValue('masterVolume', params.masterVolume, true);
-            if (audioContext.state === 'running') { isAudioResumed = true; masterGain.gain.value = params.masterVolume; } else { isAudioResumed = false; console.log("Context suspended."); }
-        } catch (e) { console.error("Audio Init Error:", e); isAudioInitialized = false; isAudioResumed = false; alert("Audio Init Error: " + e.message); }
+    async function initAudio() { // (unchanged)
+        if (isAudioInitialized) return; console.log("Initializing AudioContext..."); try { audioContext = new (window.AudioContext || window.webkitAudioContext)(); if (!audioContext) throw new Error("Web Audio API not supported."); isAudioInitialized = true; console.log("Initial State:", audioContext.state); masterGain = audioContext.createGain(); masterGain.gain.value = 0; effectsInput = audioContext.createGain(); distortionPreGain = audioContext.createGain(); distortion = audioContext.createWaveShaper(); delay = audioContext.createDelay(2.0); delayFeedbackGain = audioContext.createGain(); delayWetGain = audioContext.createGain(); reverb = audioContext.createConvolver(); reverbWetGain = audioContext.createGain(); noiseBuffer = createNoiseBuffer(audioContext); reverb.buffer = createReverbImpulse(audioContext); effectsInput.connect(distortionPreGain); distortionPreGain.connect(distortion); distortion.connect(masterGain); distortion.connect(delay); delay.connect(delayFeedbackGain); delayFeedbackGain.connect(delay); delay.connect(delayWetGain); delayWetGain.connect(masterGain); distortion.connect(reverb); reverb.connect(reverbWetGain); reverbWetGain.connect(masterGain); masterGain.connect(audioContext.destination); updateParameterValue('effects.distortion.amount', params.effects.distortion.amount, true); updateParameterValue('effects.delay.time', params.effects.delay.time, true); updateParameterValue('effects.delay.feedback', params.effects.delay.feedback, true); updateParameterValue('effects.delay.level', params.effects.delay.level, true); updateParameterValue('effects.reverb.level', params.effects.reverb.level, true); updateParameterValue('masterVolume', params.masterVolume, true); if (audioContext.state === 'running') { isAudioResumed = true; masterGain.gain.value = params.masterVolume; } else { isAudioResumed = false; console.log("Context suspended."); } } catch (e) { console.error("Audio Init Error:", e); isAudioInitialized = false; isAudioResumed = false; alert("Audio Init Error: " + e.message); }
     }
 
     // ----- DRUM VOICE TRIGGERING -----
-    function triggerDrumSound(voiceIndex, playTime = audioContext.currentTime) { // Added playTime parameter
-        if (!isAudioInitialized || !audioContext) return; // No need to check isAudioResumed here, scheduling handles it
-
-        const voiceParams = params.voices[voiceIndex];
-        const waveType = WAVEFORMS[voiceParams.wave];
-        const now = playTime; // Use scheduled time
-        const env = voiceParams.env;
-        const voiceLevel = voiceParams.level;
-        const voiceCutoff = voiceParams.cutoff;
-
-        // Stop Previous Sounds - Not strictly needed if scheduling correctly, but good practice for manual triggers
-        // activeSources[voiceIndex].forEach(nodes => { /* ... */ }); // Keep if manual triggers are still desired
-        // activeSources[voiceIndex] = [];
-
-        // Create Nodes
-        let sourceNode;
-        const sourceGain = audioContext.createGain();
-        const levelGain = audioContext.createGain();
-        const filterNode = audioContext.createBiquadFilter();
-        const envelopeGain = audioContext.createGain();
-
-        filterNode.type = 'highpass'; // Corrected to highpass
-        filterNode.frequency.setValueAtTime(voiceCutoff, now); // Set value at scheduled time
-        filterNode.Q.setValueAtTime(1, now);
-        levelGain.gain.setValueAtTime(voiceLevel, now);
-
-        // Create Source
-        if (waveType === 'noise') {
-            sourceNode = audioContext.createBufferSource();
-            sourceNode.buffer = noiseBuffer;
-            sourceNode.loop = false;
-        } else {
-            sourceNode = audioContext.createOscillator();
-            sourceNode.type = waveType;
-            sourceNode.frequency.setValueAtTime(voiceParams.pitch, now);
-        }
-
-        // Connect Path
-        sourceNode.connect(sourceGain);
-        sourceGain.connect(levelGain);
-        levelGain.connect(filterNode);
-        filterNode.connect(envelopeGain);
-        envelopeGain.connect(effectsInput);
-        sourceGain.gain.value = 1;
-
-        // Apply ADSR Envelope
-        const peakLevel = 1.0;
-        const sustainLevel = Math.max(0.0001, env.sustain * peakLevel);
-        const attackTime = Math.max(0.001, env.attack);
-        const decayTime = Math.max(0.001, env.decay);
-        const releaseTime = Math.max(0.001, env.release);
-        const totalDuration = attackTime + decayTime + releaseTime;
-
-        envelopeGain.gain.cancelScheduledValues(now);
-        envelopeGain.gain.setValueAtTime(0, now);
-        envelopeGain.gain.linearRampToValueAtTime(peakLevel, now + attackTime);
-        envelopeGain.gain.linearRampToValueAtTime(sustainLevel, now + attackTime + decayTime);
-        envelopeGain.gain.setValueAtTime(sustainLevel, now + attackTime + decayTime); // Hold before release
-        envelopeGain.gain.linearRampToValueAtTime(0.00001, now + totalDuration);
-
-        // Start and Stop Source
-        sourceNode.start(now);
-        sourceNode.stop(now + totalDuration + 0.05); // Stop slightly after envelope finishes
-
-        // --- Visual Feedback (Manual Trigger Only) ---
-        // Don't flash light for sequencer triggers, indicator row handles it
-        // const light = indicatorLights[voiceIndex];
-        // light.classList.add('active');
-        // setTimeout(() => light.classList.remove('active'), 100);
+    function triggerDrumSound(voiceIndex, playTime = audioContext.currentTime) { // (unchanged)
+        if (!isAudioInitialized || !audioContext) return; const voiceParams = params.voices[voiceIndex]; const waveType = WAVEFORMS[voiceParams.wave]; const now = playTime; const env = voiceParams.env; const voiceLevel = voiceParams.level; const voiceCutoff = voiceParams.cutoff; let sourceNode; const sourceGain = audioContext.createGain(); const levelGain = audioContext.createGain(); const filterNode = audioContext.createBiquadFilter(); const envelopeGain = audioContext.createGain(); filterNode.type = 'highpass'; filterNode.frequency.setValueAtTime(voiceCutoff, now); filterNode.Q.setValueAtTime(1, now); levelGain.gain.setValueAtTime(voiceLevel, now); const nodesToStore = { levelGain: levelGain, filterNode: filterNode, envGain: envelopeGain }; if (waveType === 'noise') { sourceNode = audioContext.createBufferSource(); sourceNode.buffer = noiseBuffer; sourceNode.loop = false; nodesToStore.noise = sourceNode; } else { sourceNode = audioContext.createOscillator(); sourceNode.type = waveType; sourceNode.frequency.setValueAtTime(voiceParams.pitch, now); nodesToStore.osc = sourceNode; } activeSources[voiceIndex].push(nodesToStore); sourceNode.connect(sourceGain); sourceGain.connect(levelGain); levelGain.connect(filterNode); filterNode.connect(envelopeGain); envelopeGain.connect(effectsInput); sourceGain.gain.value = 1; const peakLevel = 1.0; const sustainLevel = Math.max(0.0001, env.sustain * peakLevel); const attackTime = Math.max(0.001, env.attack); const decayTime = Math.max(0.001, env.decay); const releaseTime = Math.max(0.001, env.release); const totalDuration = attackTime + decayTime + releaseTime; envelopeGain.gain.cancelScheduledValues(now); envelopeGain.gain.setValueAtTime(0, now); envelopeGain.gain.linearRampToValueAtTime(peakLevel, now + attackTime); envelopeGain.gain.linearRampToValueAtTime(sustainLevel, now + attackTime + decayTime); envelopeGain.gain.setValueAtTime(sustainLevel, now + attackTime + decayTime); envelopeGain.gain.linearRampToValueAtTime(0.00001, now + totalDuration); sourceNode.start(now); try { if (sourceNode instanceof AudioBufferSourceNode || sourceNode instanceof OscillatorNode) { sourceNode.stop(now + totalDuration + 0.05); } } catch (e) { /* Ignore */ }
     }
 
     // ----- UI UPDATE FUNCTIONS -----
@@ -709,305 +611,191 @@
     function updateKnobVisual(knob, valueForRotation, actualAudioValue) { knob.dataset.actualValue = typeof actualAudioValue === 'number' ? actualAudioValue.toFixed(5) : String(actualAudioValue); const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null; let percentage = Math.max(0, Math.min(1, valueForRotation)); if (steps) { const numSteps = steps.length; const stepIndex = numSteps > 1 ? Math.round(percentage * (numSteps - 1)) : 0; if (knob.id.includes('-wave')) { const voiceIndex = parseInt(knob.id.match(/v(\d+)-/)[1]); if (waveformIndicators[voiceIndex]) { waveformIndicators[voiceIndex].textContent = WAVEFORM_INDICATORS[stepIndex] || '?'; } } } else { updateKnobValueDisplay(knob, actualAudioValue); } const rotation = -135 + (percentage * 270); knob.style.transform = `rotate(${rotation}deg)`; }
 
     function updateParameterValue(paramPath, value, forceUpdate = false) { // (unchanged)
-        const parts = paramPath.split('.'); let currentParamObj = params;
-        try { for (let i = 0; i < parts.length - 1; i++) { if (!currentParamObj[parts[i]]) currentParamObj[parts[i]] = {}; currentParamObj = currentParamObj[parts[i]]; } const finalKey = parts[parts.length - 1]; if (typeof value === 'string' && !isNaN(parseFloat(value))) { value = parseFloat(value); } currentParamObj[finalKey] = value; } catch (e) { console.error("Error updating internal params:", paramPath, value, e); return; }
-        if (isAudioInitialized && (isAudioResumed || forceUpdate) && audioContext) { const now = audioContext.currentTime; const rampTime = 0.01; try { if (paramPath === 'masterVolume' && masterGain) { masterGain.gain.setTargetAtTime(value, now, rampTime); } else if (paramPath === 'effects.distortion.amount' && distortion && distortionPreGain) { const preGainValue = 1 + (value / 100) * 9; distortionPreGain.gain.setTargetAtTime(preGainValue, now, rampTime); distortion.curve = makeDistortionCurve(value, audioContext); distortion.oversample = value > 15 ? '4x' : (value > 5 ? '2x' : 'none'); } else if (paramPath === 'effects.delay.time' && delay) { delay.delayTime.setTargetAtTime(value, now, rampTime); } else if (paramPath === 'effects.delay.feedback' && delayFeedbackGain) { delayFeedbackGain.gain.setTargetAtTime(value, now, rampTime); } else if (paramPath === 'effects.delay.level' && delayWetGain) { delayWetGain.gain.setTargetAtTime(value, now, rampTime); } else if (paramPath === 'effects.reverb.level' && reverbWetGain) { reverbWetGain.gain.setTargetAtTime(value, now, rampTime); } } catch (e) { console.error(`Error setting AudioNode param ${paramPath}:`, e, "Value:", value); } }
+        const parts = paramPath.split('.'); let currentParamObj = params; try { for (let i = 0; i < parts.length - 1; i++) { if (!currentParamObj[parts[i]]) currentParamObj[parts[i]] = {}; currentParamObj = currentParamObj[parts[i]]; } const finalKey = parts[parts.length - 1]; if (typeof value === 'string' && !isNaN(parseFloat(value))) { value = parseFloat(value); } currentParamObj[finalKey] = value; } catch (e) { console.error("Error updating internal params:", paramPath, value, e); return; } if (isAudioInitialized && (isAudioResumed || forceUpdate) && audioContext) { const now = audioContext.currentTime; const rampTime = 0.01; try { if (paramPath === 'masterVolume' && masterGain) { masterGain.gain.setTargetAtTime(value, now, rampTime); } else if (paramPath === 'effects.distortion.amount' && distortion && distortionPreGain) { const preGainValue = 1 + (value / 100) * 9; distortionPreGain.gain.setTargetAtTime(preGainValue, now, rampTime); distortion.curve = makeDistortionCurve(value, audioContext); distortion.oversample = value > 15 ? '4x' : (value > 5 ? '2x' : 'none'); } else if (paramPath === 'effects.delay.time' && delay) { delay.delayTime.setTargetAtTime(value, now, rampTime); } else if (paramPath === 'effects.delay.feedback' && delayFeedbackGain) { delayFeedbackGain.gain.setTargetAtTime(value, now, rampTime); } else if (paramPath === 'effects.delay.level' && delayWetGain) { delayWetGain.gain.setTargetAtTime(value, now, rampTime); } else if (paramPath === 'effects.reverb.level' && reverbWetGain) { reverbWetGain.gain.setTargetAtTime(value, now, rampTime); } } catch (e) { console.error(`Error setting AudioNode param ${paramPath}:`, e, "Value:", value); } }
     }
     function updateParameterFromKnob(knob, newValue, forceUpdate = false) { // (unchanged)
-        const paramPath = knob.dataset.param; const min = parseFloat(knob.dataset.min); const max = parseFloat(knob.dataset.max); const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null; const isLog = knob.dataset.curve === 'log'; let uiValue = newValue; let actualAudioValue; let percentageForVisual = 0.5;
-        if (steps) { const stepIndex = Math.max(0, Math.min(steps.length - 1, Math.round(parseFloat(newValue)))); uiValue = stepIndex; actualAudioValue = stepIndex; knob.dataset.value = uiValue; percentageForVisual = steps.length > 1 ? stepIndex / (steps.length - 1) : 0.5; } else { const numericValue = parseFloat(newValue); uiValue = Math.max(min, Math.min(max, numericValue)); actualAudioValue = uiValue; knob.dataset.value = uiValue.toFixed(5); if (isLog && min > 0) { if (uiValue <= min) percentageForVisual = 0; else if (uiValue >= max) percentageForVisual = 1; else percentageForVisual = Math.log(uiValue / min) / Math.log(max / min); } else { const range = max - min; percentageForVisual = range > 0 ? (actualAudioValue - min) / range : 0.5; } }
-        percentageForVisual = Math.max(0, Math.min(1, isNaN(percentageForVisual) ? 0.5 : percentageForVisual)); updateKnobVisual(knob, percentageForVisual, actualAudioValue); updateParameterValue(paramPath, actualAudioValue, forceUpdate);
+        const paramPath = knob.dataset.param; const min = parseFloat(knob.dataset.min); const max = parseFloat(knob.dataset.max); const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null; const isLog = knob.dataset.curve === 'log'; let uiValue = newValue; let actualAudioValue; let percentageForVisual = 0.5; if (steps) { const stepIndex = Math.max(0, Math.min(steps.length - 1, Math.round(parseFloat(newValue)))); uiValue = stepIndex; actualAudioValue = stepIndex; knob.dataset.value = uiValue; percentageForVisual = steps.length > 1 ? stepIndex / (steps.length - 1) : 0.5; } else { const numericValue = parseFloat(newValue); uiValue = Math.max(min, Math.min(max, numericValue)); actualAudioValue = uiValue; knob.dataset.value = uiValue.toFixed(5); if (isLog && min > 0) { if (uiValue <= min) percentageForVisual = 0; else if (uiValue >= max) percentageForVisual = 1; else percentageForVisual = Math.log(uiValue / min) / Math.log(max / min); } else { const range = max - min; percentageForVisual = range > 0 ? (actualAudioValue - min) / range : 0.5; } } percentageForVisual = Math.max(0, Math.min(1, isNaN(percentageForVisual) ? 0.5 : percentageForVisual)); updateKnobVisual(knob, percentageForVisual, actualAudioValue); updateParameterValue(paramPath, actualAudioValue, forceUpdate);
     }
-
     function updateAllKnobs(forceUpdate = false) { // (unchanged)
         if (!knobs) knobs = drumMachinePanel.querySelectorAll('.knob'); knobs.forEach(knob => { const initialValueAttr = knob.getAttribute('data-value'); const currentDatasetValue = knob.dataset.value; let valueToUse = (forceUpdate || currentDatasetValue === undefined || currentDatasetValue === null) ? initialValueAttr : currentDatasetValue; if (valueToUse !== null) { updateParameterFromKnob(knob, valueToUse, forceUpdate); } else { console.warn("Knob missing value:", knob.id); } if (!knob.dataset.steps) { const displayId = knob.id + '-value'; const displayElement = document.getElementById(displayId); if (displayElement && document.activeElement !== knob) { displayElement.style.display = 'none'; } } });
     }
 
-
     // ----- SEQUENCER LOGIC -----
 
-    // Function to schedule notes for upcoming steps
-    function scheduleNotes(currentStep, currentTime) {
-        sequencer.stepDuration = 60.0 / sequencer.tempo / 4.0; // Duration of one 16th note
+    function scheduleNotes(currentStep, currentTime) { // (unchanged)
+        sequencer.stepDuration = 60.0 / sequencer.tempo / 4.0; while (sequencer.nextStepTime < currentTime + sequencer.scheduleAheadTime) { const stepIndex = sequencer.currentStep; const stepTime = sequencer.nextStepTime; for (let voiceIndex = 0; voiceIndex < NUM_VOICES; voiceIndex++) { if (sequencer.steps[voiceIndex][stepIndex] === 1) { triggerDrumSound(voiceIndex, stepTime); } } updateStepIndicator(stepIndex); sequencer.nextStepTime += sequencer.stepDuration; sequencer.currentStep = (sequencer.currentStep + 1) % NUM_STEPS; }
+    }
+    function sequencerScheduler() { // (unchanged)
+        if (!sequencer.isPlaying) return; const currentTime = audioContext.currentTime; scheduleNotes(sequencer.currentStep, currentTime); sequencer.timerId = setTimeout(sequencerScheduler, sequencer.lookahead);
+    }
+    function playSequencer() { // (unchanged)
+        if (!isAudioInitialized || !isAudioResumed) { console.warn("Audio not ready, cannot start sequencer."); ensureAudioContextResumed().then(resumed => { if (resumed) playSequencer(); }); return; } if (sequencer.isPlaying) return; sequencer.isPlaying = true; sequencer.currentStep = 0; sequencer.nextStepTime = audioContext.currentTime + 0.05; sequencerScheduler(); playStopButton.textContent = "⏹"; playStopButton.classList.add("playing");
+    }
+    function stopSequencer() { // (unchanged)
+        if (!sequencer.isPlaying) return; sequencer.isPlaying = false; clearTimeout(sequencer.timerId); sequencer.timerId = null; playStopButton.textContent = "▶︎"; playStopButton.classList.remove("playing"); clearStepIndicators();
+    }
+    function togglePlayStop() { // (unchanged)
+        if (sequencer.isPlaying) { stopSequencer(); } else { playSequencer(); }
+    }
+    function updateTempo(newTempo) { // (unchanged)
+        const clampedTempo = Math.max(30, Math.min(300, newTempo)); sequencer.tempo = clampedTempo; tempoInput.value = clampedTempo;
+    }
+    function resetSequencer() { // (unchanged)
+        stopSequencer(); for (let v = 0; v < NUM_VOICES; v++) { for (let s = 0; s < NUM_STEPS; s++) { sequencer.steps[v][s] = 0; stepButtons[v][s].classList.remove('active'); } } sequencer.currentStep = 0; clearStepIndicators(); console.log("Sequencer Reset.");
+    }
 
-        while (sequencer.nextStepTime < currentTime + sequencer.scheduleAheadTime) {
-            const stepIndex = sequencer.currentStep;
-            const stepTime = sequencer.nextStepTime;
+    // --- NEW/MODIFIED: Step State Management ---
+    function getStepState(voiceIndex, stepIndex) {
+        return sequencer.steps[voiceIndex][stepIndex] === 1;
+    }
 
-            for (let voiceIndex = 0; voiceIndex < NUM_VOICES; voiceIndex++) {
-                if (sequencer.steps[voiceIndex][stepIndex] === 1) {
-                    triggerDrumSound(voiceIndex, stepTime);
-                }
-            }
-            // Update visual indicator just before the step is meant to play
-             updateStepIndicator(stepIndex, stepTime);
-
-            // Advance to the next step time
-            sequencer.nextStepTime += sequencer.stepDuration;
-            sequencer.currentStep = (sequencer.currentStep + 1) % NUM_STEPS;
+    function setStepState(voiceIndex, stepIndex, isActive) {
+        const newState = isActive ? 1 : 0;
+        if (sequencer.steps[voiceIndex][stepIndex] !== newState) {
+            sequencer.steps[voiceIndex][stepIndex] = newState;
+            stepButtons[voiceIndex][stepIndex].classList.toggle('active', isActive);
         }
     }
+    // --- END NEW/MODIFIED ---
 
-    // The main timer loop
-    function sequencerScheduler() {
-        if (!sequencer.isPlaying) return;
+    // --- Sequencer Visuals ---
+    function createSequencerGridUI() {
+        // Create Step Indicators (unchanged)
+        stepIndicatorRow.innerHTML = ''; stepIndicators = []; for (let i = 0; i < NUM_STEPS; i++) { const indicator = document.createElement('div'); indicator.classList.add('step-indicator'); indicator.id = `step-indicator-${i}`; stepIndicatorRow.appendChild(indicator); stepIndicators.push(indicator); }
 
-        const currentTime = audioContext.currentTime;
-        scheduleNotes(sequencer.currentStep, currentTime);
-
-        // Schedule the next check
-        sequencer.timerId = setTimeout(sequencerScheduler, sequencer.lookahead);
-    }
-
-    function playSequencer() {
-        if (!isAudioInitialized || !isAudioResumed) {
-            console.warn("Audio not ready, cannot start sequencer.");
-            // Optionally try to resume audio here
-             ensureAudioContextResumed().then(resumed => {
-                 if (resumed) playSequencer(); // Try again if resumed successfully
-             });
-            return;
-        }
-        if (sequencer.isPlaying) return;
-
-        sequencer.isPlaying = true;
-        sequencer.currentStep = 0; // Start from step 0
-        sequencer.nextStepTime = audioContext.currentTime + 0.05; // Start scheduling slightly ahead
-        sequencerScheduler(); // Start the scheduling loop
-
-        playStopButton.textContent = "⏹";
-        playStopButton.classList.add("playing");
-    }
-
-    function stopSequencer() {
-        if (!sequencer.isPlaying) return;
-
-        sequencer.isPlaying = false;
-        clearTimeout(sequencer.timerId); // Stop the scheduling loop
-        sequencer.timerId = null;
-
-        playStopButton.textContent = "▶︎";
-        playStopButton.classList.remove("playing");
-        clearStepIndicators(); // Reset indicators
-    }
-
-    function togglePlayStop() {
-        if (sequencer.isPlaying) {
-            stopSequencer();
-        } else {
-            playSequencer();
-        }
-    }
-
-    function updateTempo(newTempo) {
-        const clampedTempo = Math.max(30, Math.min(300, newTempo)); // Clamp BPM
-        sequencer.tempo = clampedTempo;
-        tempoInput.value = clampedTempo; // Update input field in case it was clamped
-        // The stepDuration will be recalculated in the next scheduleNotes call
-    }
-
-    function resetSequencer() {
-        stopSequencer();
+        // Create Step Buttons (Remove individual click listener)
+        sequencerGrid.innerHTML = ''; stepButtons = [];
         for (let v = 0; v < NUM_VOICES; v++) {
+            stepButtons[v] = [];
             for (let s = 0; s < NUM_STEPS; s++) {
-                sequencer.steps[v][s] = 0;
-                stepButtons[v][s].classList.remove('active');
+                const button = document.createElement('button');
+                button.classList.add('step-button');
+                button.dataset.voice = v;
+                button.dataset.step = s;
+                // REMOVED: button.addEventListener('click', () => toggleStep(v, s));
+                sequencerGrid.appendChild(button);
+                stepButtons[v].push(button);
             }
         }
-        sequencer.currentStep = 0;
-        clearStepIndicators();
-        console.log("Sequencer Reset.");
     }
 
-     function toggleStep(voiceIndex, stepIndex) {
-        sequencer.steps[voiceIndex][stepIndex] = 1 - sequencer.steps[voiceIndex][stepIndex]; // Toggle 0/1
-        stepButtons[voiceIndex][stepIndex].classList.toggle('active');
-     }
-
-     // --- Sequencer Visuals ---
-     function createSequencerGridUI() {
-         // Create Step Indicators
-         stepIndicatorRow.innerHTML = ''; // Clear previous
-         stepIndicators = [];
-         for (let i = 0; i < NUM_STEPS; i++) {
-             const indicator = document.createElement('div');
-             indicator.classList.add('step-indicator');
-             indicator.id = `step-indicator-${i}`;
-             stepIndicatorRow.appendChild(indicator);
-             stepIndicators.push(indicator);
-         }
-
-         // Create Step Buttons
-         sequencerGrid.innerHTML = ''; // Clear previous
-         stepButtons = [];
-         for (let v = 0; v < NUM_VOICES; v++) {
-             stepButtons[v] = [];
-             for (let s = 0; s < NUM_STEPS; s++) {
-                 const button = document.createElement('button');
-                 button.classList.add('step-button');
-                 button.dataset.voice = v;
-                 button.dataset.step = s;
-                 button.addEventListener('click', () => toggleStep(v, s));
-                 sequencerGrid.appendChild(button);
-                 stepButtons[v].push(button);
-             }
-         }
-     }
-
-     let lastIndicatorUpdate = { step: -1, timeoutId: null };
-
-     function updateStepIndicator(stepIndex) {
-         // Clear previous indicator timeout if it exists
-         if (lastIndicatorUpdate.timeoutId) {
-             clearTimeout(lastIndicatorUpdate.timeoutId);
-             if(lastIndicatorUpdate.step >= 0 && lastIndicatorUpdate.step < NUM_STEPS) {
-                  stepIndicators[lastIndicatorUpdate.step]?.classList.remove('active');
-                  // Also remove playing class from step buttons of previous step
-                   for(let v = 0; v < NUM_VOICES; v++){
-                        stepButtons[v][lastIndicatorUpdate.step]?.classList.remove('playing');
-                   }
-             }
-         }
-
-         // Light up the current step indicator
-         if(stepIndex >= 0 && stepIndex < NUM_STEPS) {
-             stepIndicators[stepIndex]?.classList.add('active');
-             // Add playing class to step buttons of current step
-             for(let v = 0; v < NUM_VOICES; v++){
-                 stepButtons[v][stepIndex]?.classList.add('playing');
-            }
-         }
-
-         // Schedule the indicator and button highlight to turn off shortly after step duration
-         const indicatorOffDelay = (sequencer.stepDuration * 1000) * 0.8; // Turn off slightly before next step
-         lastIndicatorUpdate.step = stepIndex;
-         lastIndicatorUpdate.timeoutId = setTimeout(() => {
-            if(stepIndex >= 0 && stepIndex < NUM_STEPS) {
-                 stepIndicators[stepIndex]?.classList.remove('active');
-                 for(let v = 0; v < NUM_VOICES; v++){
-                     stepButtons[v][stepIndex]?.classList.remove('playing');
-                 }
-            }
-             lastIndicatorUpdate.timeoutId = null; // Clear the stored ID
-         }, indicatorOffDelay);
-     }
-
-
-     function clearStepIndicators() {
-         if (lastIndicatorUpdate.timeoutId) {
-             clearTimeout(lastIndicatorUpdate.timeoutId);
-             lastIndicatorUpdate.timeoutId = null;
-         }
-         stepIndicators.forEach(ind => ind.classList.remove('active'));
-         stepButtons.flat().forEach(btn => btn.classList.remove('playing'));
-         lastIndicatorUpdate.step = -1;
-     }
-
+    let lastIndicatorUpdate = { step: -1, timeoutId: null }; // (unchanged)
+    function updateStepIndicator(stepIndex) { if (lastIndicatorUpdate.timeoutId) { clearTimeout(lastIndicatorUpdate.timeoutId); if(lastIndicatorUpdate.step >= 0 && lastIndicatorUpdate.step < NUM_STEPS) { stepIndicators[lastIndicatorUpdate.step]?.classList.remove('active'); for(let v = 0; v < NUM_VOICES; v++){ stepButtons[v][lastIndicatorUpdate.step]?.classList.remove('playing'); } } } if(stepIndex >= 0 && stepIndex < NUM_STEPS) { stepIndicators[stepIndex]?.classList.add('active'); for(let v = 0; v < NUM_VOICES; v++){ stepButtons[v][stepIndex]?.classList.add('playing'); } } const indicatorOffDelay = (sequencer.stepDuration * 1000) * 0.8; lastIndicatorUpdate.step = stepIndex; lastIndicatorUpdate.timeoutId = setTimeout(() => { if(stepIndex >= 0 && stepIndex < NUM_STEPS) { stepIndicators[stepIndex]?.classList.remove('active'); for(let v = 0; v < NUM_VOICES; v++){ stepButtons[v][stepIndex]?.classList.remove('playing'); } } lastIndicatorUpdate.timeoutId = null; }, indicatorOffDelay); }
+    function clearStepIndicators() { if (lastIndicatorUpdate.timeoutId) { clearTimeout(lastIndicatorUpdate.timeoutId); lastIndicatorUpdate.timeoutId = null; } stepIndicators.forEach(ind => ind.classList.remove('active')); stepButtons.flat().forEach(btn => btn.classList.remove('playing')); lastIndicatorUpdate.step = -1; }
 
     // ----- EVENT LISTENERS -----
 
-        // -- Keyboard Input for Triggering Drums & Sequencer --
-        document.addEventListener('keydown', async (e) => {
-        // Ignore repeats or if modifier keys are pressed
-        if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+    // -- Keyboard Input (unchanged) --
+    document.addEventListener('keydown', async (e) => { if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return; if (e.code === 'Space') { e.preventDefault(); togglePlayStop(); return; } const voiceIndex = keyToVoiceIndex[e.code]; if (voiceIndex !== undefined) { e.preventDefault(); let canPlay = isAudioResumed; if (!canPlay && isAudioInitialized) canPlay = await ensureAudioContextResumed(); if (canPlay) { triggerDrumSound(voiceIndex, audioContext.currentTime); const light = indicatorLights[voiceIndex]; if (light) { light.classList.add('active'); setTimeout(() => light.classList.remove('active'), 100); } } else { console.warn("Audio context not running for manual trigger."); } return; } if (document.activeElement && document.activeElement.classList.contains('knob')) { const focusedKnob = document.activeElement; if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); handleKnobArrowKey(focusedKnob, e.key === 'ArrowLeft' ? -1 : 1, e.shiftKey); } else if (e.key >= '0' && e.key <= '9') { e.preventDefault(); handleKnobNumberKey(focusedKnob, parseInt(e.key, 10)); } } });
 
-        // Sequencer Play/Stop Toggle with Spacebar (handles its own preventDefault)
-        if (e.code === 'Space') {
-            e.preventDefault(); // Prevent page scrolling
-            togglePlayStop();
-            return; // Don't process other keys if space was pressed
-        }
-
-        // --- Manual Drum Triggers ---
-        const voiceIndex = keyToVoiceIndex[e.code];
-        if (voiceIndex !== undefined) {
-             // Prevent default behavior only if it's a drum trigger key
-             e.preventDefault();
-             let canPlay = isAudioResumed;
-             if (!canPlay && isAudioInitialized) canPlay = await ensureAudioContextResumed();
-
-             // Trigger sound immediately for manual play, respecting audio readiness
-             if (canPlay) {
-                triggerDrumSound(voiceIndex, audioContext.currentTime); // Play sound now
-
-                // --- ADD VISUAL FEEDBACK FOR MANUAL TRIGGER ---
-                const light = indicatorLights[voiceIndex];
-                if (light) { // Check if light element exists
-                    light.classList.add('active');
-                    setTimeout(() => light.classList.remove('active'), 100); // Flash light briefly
-                }
-                // --- END OF VISUAL FEEDBACK ---
-
-             } else {
-                console.warn("Audio context not running for manual trigger.");
-             }
-             // We handled the drum key, don't process knob controls for this event
-             return;
-        }
-
-        // --- Knob Keyboard Control (Only runs if not a drum trigger key or space) ---
-        if (document.activeElement && document.activeElement.classList.contains('knob')) {
-            const focusedKnob = document.activeElement;
-            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-                e.preventDefault();
-                handleKnobArrowKey(focusedKnob, e.key === 'ArrowLeft' ? -1 : 1, e.shiftKey);
-            } else if (e.key >= '0' && e.key <= '9') {
-                e.preventDefault();
-                handleKnobNumberKey(focusedKnob, parseInt(e.key, 10));
-            }
-        }
-    });
-
-     // --- Knob Keyboard Control Helpers ---
-     // (getKnobPercentage, handleKnobArrowKey, handleKnobNumberKey remain the same)
+     // --- Knob Keyboard Control Helpers (unchanged) ---
       function getKnobPercentage(knob){const min=parseFloat(knob.dataset.min);const max=parseFloat(knob.dataset.max);const steps=knob.dataset.steps?knob.dataset.steps.split(','):null;const isLog=knob.dataset.curve==='log'&&min>0;let currentValueStr=knob.dataset.value;let percentage=0.5;if(currentValueStr===undefined||currentValueStr===null)return 0.5;if(steps){const numSteps=steps.length;const stepIndex=parseInt(currentValueStr);percentage=numSteps>1?stepIndex/(numSteps-1):0.5;}else{let currentValue=parseFloat(knob.dataset.actualValue||currentValueStr);if(isLog){if(currentValue<=min)percentage=0;else if(currentValue>=max)percentage=1;else percentage=Math.log(currentValue/min)/Math.log(max/min);}else{const range=max-min;percentage=range>0?(currentValue-min)/range:0.5;}}return Math.max(0,Math.min(1,isNaN(percentage)?0.5:percentage));}
       function handleKnobArrowKey(knob,direction,isShift){const steps=knob.dataset.steps?knob.dataset.steps.split(','):null;const min=parseFloat(knob.dataset.min);const max=parseFloat(knob.dataset.max);const isLog=knob.dataset.curve==='log'&&min>0;let currentPercentage=getKnobPercentage(knob);let newValue;if(steps){const numSteps=steps.length;let currentStepIndex=Math.round(currentPercentage*(numSteps-1));let stepChange=direction*(isShift?2:1);newValue=Math.max(0,Math.min(numSteps-1,currentStepIndex+stepChange));}else{let percentageChange=direction*(isShift?0.1:0.01);let newPercentage=Math.max(0,Math.min(1,currentPercentage+percentageChange));if(isLog){newValue=min*Math.pow(max/min,newPercentage);}else{const range=max-min;newValue=min+newPercentage*range;}newValue=Math.max(min,Math.min(max,newValue));}updateParameterFromKnob(knob,newValue);}
       function handleKnobNumberKey(knob,number){const steps=knob.dataset.steps?knob.dataset.steps.split(','):null;const min=parseFloat(knob.dataset.min);const max=parseFloat(knob.dataset.max);const isLog=knob.dataset.curve==='log'&&min>0;let targetValue;if(steps){const numSteps=steps.length;if(numSteps===0)return;let targetIndex=(number===0)?numSteps-1:number-1;targetValue=Math.max(0,Math.min(numSteps-1,targetIndex));}else{let currentActualValue=parseFloat(knob.dataset.actualValue||knob.dataset.value||'0');const epsilon=1e-7;let targetPercentage=(number===0)?(Math.abs(currentActualValue-min)<epsilon?1.0:0.0):number/10.0;if(isLog){targetValue=min*Math.pow(max/min,targetPercentage);}else{const range=max-min;targetValue=min+targetPercentage*range;}targetValue=Math.max(min,Math.min(max,targetValue));}updateParameterFromKnob(knob,targetValue);}
 
     // -- Mouse Input for Knobs --
     // (isDragging, dragKnob, startY, startValuePercentage, handleKnobMouseMove, stopDrag, setupKnobListeners remain the same)
-    let isDragging=false;let dragKnob=null;let startY=0;let startValuePercentage=0;
-    function handleKnobMouseMove(e){if(!isDragging||!dragKnob)return;e.preventDefault();const currentY=e.clientY;const deltaY=startY-currentY;const steps=dragKnob.dataset.steps?dragKnob.dataset.steps.split(','):null;const min=parseFloat(dragKnob.dataset.min);const max=parseFloat(dragKnob.dataset.max);const isLog=dragKnob.dataset.curve==='log'&&min>0;let newValue;if(steps){const pixelsPerStep=20;const totalSteps=steps.length;if(totalSteps<=1)return;const totalDragPixelsForRange=pixelsPerStep*(totalSteps-1);const percentageChange=totalDragPixelsForRange>0?(deltaY/totalDragPixelsForRange):0;let newPercentage=Math.max(0,Math.min(1,startValuePercentage+percentageChange));newValue=Math.round(newPercentage*(totalSteps-1));}else{const dragRangePixels=150;const deltaPercentage=deltaY/dragRangePixels;let newPercentage=Math.max(0,Math.min(1,startValuePercentage+deltaPercentage));if(isLog){const epsilon=1e-9;const clampedPercentage=Math.max(epsilon,Math.min(1-epsilon,newPercentage));if(min>0&&max>min)newValue=min*Math.pow(max/min,clampedPercentage);else newValue=(newPercentage>0.5)?max:min;}else{const range=max-min;newValue=min+newPercentage*range;}newValue=Math.max(min,Math.min(max,newValue));}let currentValueInDataStr=dragKnob.dataset.value;const tolerance=1e-6;if(steps){if(newValue!==parseInt(currentValueInDataStr)){updateParameterFromKnob(dragKnob,newValue);}}else{if(Math.abs(newValue-parseFloat(currentValueInDataStr))>tolerance){updateParameterFromKnob(dragKnob,newValue);}}}
-    function stopDrag(){if(isDragging&&dragKnob){dragKnob.closest('.control-group')?.classList.remove('interacting');}if(isDragging){isDragging=false;dragKnob=null;document.body.classList.remove('dragging');document.removeEventListener('mousemove',handleKnobMouseMove);document.removeEventListener('mouseup',stopDrag);document.removeEventListener('mouseleave',stopDrag);}}
-    function setupKnobListeners(){if(!knobs)knobs=drumMachinePanel.querySelectorAll('.knob');knobs.forEach(knob=>{const controlGroup=knob.closest('.control-group');const isStepped=knob.hasAttribute('data-steps');const valueDisplayId=knob.id+'-value';const valueDisplay=document.getElementById(valueDisplayId);if(!isStepped&&valueDisplay){knob.addEventListener('focus',()=>{const currentVal=parseFloat(knob.dataset.actualValue||knob.dataset.value||'0');updateKnobValueDisplay(knob,currentVal);valueDisplay.style.display='inline-block';});knob.addEventListener('blur',()=>{if(!isDragging||dragKnob!==knob){valueDisplay.style.display='none';}controlGroup?.classList.remove('interacting');});}knob.addEventListener('mousedown',async(e)=>{let canInteract=isAudioResumed;if(!canInteract&&isAudioInitialized)canInteract=await ensureAudioContextResumed();if(!isAudioInitialized||!canInteract)return;e.preventDefault();isDragging=true;dragKnob=knob;startY=e.clientY;startValuePercentage=getKnobPercentage(knob);knob.focus();controlGroup?.classList.add('interacting');if(!isStepped&&valueDisplay){const currentVal=parseFloat(knob.dataset.actualValue||knob.dataset.value||'0');updateKnobValueDisplay(knob,currentVal);valueDisplay.style.display='inline-block';}document.body.classList.add('dragging');document.addEventListener('mousemove',handleKnobMouseMove);document.addEventListener('mouseup',stopDrag);document.addEventListener('mouseleave',stopDrag);});knob.addEventListener('dblclick',async(e)=>{let canInteract=isAudioResumed;if(!canInteract&&isAudioInitialized)canInteract=await ensureAudioContextResumed();if(!isAudioInitialized||!canInteract)return;const defaultValueAttr=knob.getAttribute('data-value');if(defaultValueAttr!==null){updateParameterFromKnob(knob,defaultValueAttr);if(!isStepped&&valueDisplay){const defaultVal=parseFloat(defaultValueAttr);updateKnobValueDisplay(knob,defaultVal);}}});});}
-
+    let isDragging=false;let dragKnob=null;let startY=0;let startValuePercentage=0; function handleKnobMouseMove(e){if(!isDragging||!dragKnob)return;e.preventDefault();const currentY=e.clientY;const deltaY=startY-currentY;const steps=dragKnob.dataset.steps?dragKnob.dataset.steps.split(','):null;const min=parseFloat(dragKnob.dataset.min);const max=parseFloat(dragKnob.dataset.max);const isLog=dragKnob.dataset.curve==='log'&&min>0;let newValue;if(steps){const pixelsPerStep=20;const totalSteps=steps.length;if(totalSteps<=1)return;const totalDragPixelsForRange=pixelsPerStep*(totalSteps-1);const percentageChange=totalDragPixelsForRange>0?(deltaY/totalDragPixelsForRange):0;let newPercentage=Math.max(0,Math.min(1,startValuePercentage+percentageChange));newValue=Math.round(newPercentage*(totalSteps-1));}else{const dragRangePixels=150;const deltaPercentage=deltaY/dragRangePixels;let newPercentage=Math.max(0,Math.min(1,startValuePercentage+deltaPercentage));if(isLog){const epsilon=1e-9;const clampedPercentage=Math.max(epsilon,Math.min(1-epsilon,newPercentage));if(min>0&&max>min)newValue=min*Math.pow(max/min,clampedPercentage);else newValue=(newPercentage>0.5)?max:min;}else{const range=max-min;newValue=min+newPercentage*range;}newValue=Math.max(min,Math.min(max,newValue));}let currentValueInDataStr=dragKnob.dataset.value;const tolerance=1e-6;if(steps){if(newValue!==parseInt(currentValueInDataStr)){updateParameterFromKnob(dragKnob,newValue);}}else{if(Math.abs(newValue-parseFloat(currentValueInDataStr))>tolerance){updateParameterFromKnob(dragKnob,newValue);}}}
+    function stopDrag(){if(isDragging&&dragKnob){dragKnob.closest('.control-group')?.classList.remove('interacting');}if(isDragging){isDragging=false;dragKnob=null;document.body.classList.remove('dragging');document.removeEventListener('mousemove',handleKnobMouseMove);document.removeEventListener('mouseup',stopDrag);document.removeEventListener('mouseleave',stopDrag);}} function setupKnobListeners(){if(!knobs)knobs=drumMachinePanel.querySelectorAll('.knob');knobs.forEach(knob=>{const controlGroup=knob.closest('.control-group');const isStepped=knob.hasAttribute('data-steps');const valueDisplayId=knob.id+'-value';const valueDisplay=document.getElementById(valueDisplayId);if(!isStepped&&valueDisplay){knob.addEventListener('focus',()=>{const currentVal=parseFloat(knob.dataset.actualValue||knob.dataset.value||'0');updateKnobValueDisplay(knob,currentVal);valueDisplay.style.display='inline-block';});knob.addEventListener('blur',()=>{if(!isDragging||dragKnob!==knob){valueDisplay.style.display='none';}controlGroup?.classList.remove('interacting');});}knob.addEventListener('mousedown',async(e)=>{let canInteract=isAudioResumed;if(!canInteract&&isAudioInitialized)canInteract=await ensureAudioContextResumed();if(!isAudioInitialized||!canInteract)return;e.preventDefault();isDragging=true;dragKnob=knob;startY=e.clientY;startValuePercentage=getKnobPercentage(knob);knob.focus();controlGroup?.classList.add('interacting');if(!isStepped&&valueDisplay){const currentVal=parseFloat(knob.dataset.actualValue||knob.dataset.value||'0');updateKnobValueDisplay(knob,currentVal);valueDisplay.style.display='inline-block';}document.body.classList.add('dragging');document.addEventListener('mousemove',handleKnobMouseMove);document.addEventListener('mouseup',stopDrag);document.addEventListener('mouseleave',stopDrag);});knob.addEventListener('dblclick',async(e)=>{let canInteract=isAudioResumed;if(!canInteract&&isAudioInitialized)canInteract=await ensureAudioContextResumed();if(!isAudioInitialized||!canInteract)return;const defaultValueAttr=knob.getAttribute('data-value');if(defaultValueAttr!==null){updateParameterFromKnob(knob,defaultValueAttr);if(!isStepped&&valueDisplay){const defaultVal=parseFloat(defaultValueAttr);updateKnobValueDisplay(knob,defaultVal);}}});});}
 
     // --- Sequencer UI Event Listeners ---
+
+    // NEW: Handlers for step drag functionality
+    function handleSeqGridMouseDown(e) {
+        if (!e.target.classList.contains('step-button')) return;
+
+        e.preventDefault(); // Prevent text selection/dragging image ghost
+        isDraggingSeqStep = true;
+
+        const button = e.target;
+        const voiceIndex = parseInt(button.dataset.voice);
+        const stepIndex = parseInt(button.dataset.step);
+
+        // Toggle the clicked step first
+        const initialState = getStepState(voiceIndex, stepIndex);
+        const newState = !initialState;
+        setStepState(voiceIndex, stepIndex, newState);
+
+        // Determine drag mode
+        dragSeqStepMode = newState ? 'activate' : 'deactivate';
+        dragSeqStepVoice = voiceIndex;
+
+        // Add listeners to the document to track mouse movement anywhere
+        document.addEventListener('mousemove', handleSeqGridMouseMove);
+        document.addEventListener('mouseup', handleSeqGridMouseUp, { once: true }); // Remove after first mouseup
+    }
+
+    function handleSeqGridMouseMove(e) {
+        if (!isDraggingSeqStep) return;
+
+        // Check if the element being hovered over is a step button
+        const targetElement = document.elementFromPoint(e.clientX, e.clientY);
+        if (!targetElement || !targetElement.classList.contains('step-button')) {
+            return; // Not hovering over a step button
+        }
+
+        const button = targetElement;
+        const voiceIndex = parseInt(button.dataset.voice);
+        const stepIndex = parseInt(button.dataset.step);
+
+        // Only apply if it's in the same voice row
+        if (voiceIndex === dragSeqStepVoice) {
+            const currentState = getStepState(voiceIndex, stepIndex);
+            const shouldActivate = dragSeqStepMode === 'activate';
+
+            // Apply the drag mode only if the button is not already in the desired state
+            if (shouldActivate && !currentState) {
+                setStepState(voiceIndex, stepIndex, true);
+            } else if (!shouldActivate && currentState) {
+                setStepState(voiceIndex, stepIndex, false);
+            }
+        }
+    }
+
+    function handleSeqGridMouseUp(e) {
+        if (isDraggingSeqStep) {
+            isDraggingSeqStep = false;
+            dragSeqStepMode = null;
+            dragSeqStepVoice = -1;
+            document.removeEventListener('mousemove', handleSeqGridMouseMove);
+            // The mouseup listener on document is already set to {once: true}
+        }
+    }
+    // --- END NEW HANDLERS ---
+
     function setupSequencerListeners() {
         playStopButton.addEventListener('click', togglePlayStop);
         resetButton.addEventListener('click', resetSequencer);
         tempoInput.addEventListener('change', (e) => {
             const newTempo = parseFloat(e.target.value);
-            if (!isNaN(newTempo)) {
-                updateTempo(newTempo);
-            } else {
-                tempoInput.value = sequencer.tempo; // Reset if invalid input
-            }
+            if (!isNaN(newTempo)) { updateTempo(newTempo); }
+            else { tempoInput.value = sequencer.tempo; }
         });
-         tempoInput.addEventListener('input', (e) => { // Update visually while typing/spinning
+         tempoInput.addEventListener('input', (e) => {
              const currentVal = parseFloat(e.target.value);
-             if (!isNaN(currentVal)) {
-                 sequencer.tempo = Math.max(30, Math.min(300, currentVal)); // Update internal tempo immediately for timing calc
-             }
+             if (!isNaN(currentVal)) { sequencer.tempo = Math.max(30, Math.min(300, currentVal)); }
          });
+
+        // --- MODIFIED: Use event delegation for step buttons ---
+        sequencerGrid.addEventListener('mousedown', handleSeqGridMouseDown);
+        // We no longer add click listeners individually in createSequencerGridUI
+        // --- END MODIFIED ---
     }
 
     // -- General Interaction Listener for Audio Context --
     // (setupGeneralInteractionListener unchanged)
-    function setupGeneralInteractionListener(){drumMachinePanel.addEventListener('pointerdown',async()=>{if(!isAudioResumed&&isAudioInitialized){await ensureAudioContextResumed();}},{capture:true,once:true}); sequencerPanel.addEventListener('pointerdown',async()=>{if(!isAudioResumed&&isAudioInitialized){await ensureAudioContextResumed();}},{capture:true,once:true});} // Added sequencer panel too
+    function setupGeneralInteractionListener(){drumMachinePanel.addEventListener('pointerdown',async()=>{if(!isAudioResumed&&isAudioInitialized){await ensureAudioContextResumed();}},{capture:true,once:true}); sequencerPanel.addEventListener('pointerdown',async()=>{if(!isAudioResumed&&isAudioInitialized){await ensureAudioContextResumed();}},{capture:true,once:true});}
 
     // --- INITIALIZATION ---
-    document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', async () => { // (unchanged)
         knobs = drumMachinePanel.querySelectorAll('.knob');
-        createSequencerGridUI(); // Create sequencer buttons and indicators
-
+        createSequencerGridUI();
         await initAudio();
-
         if (isAudioInitialized) {
             updateAllKnobs(true);
             setupKnobListeners();
-            setupSequencerListeners(); // Add listeners for sequencer controls
-            setupGeneralInteractionListener(); // Listener to resume context
+            setupSequencerListeners(); // Sets up transport and delegated step listeners
+            setupGeneralInteractionListener();
             console.log("JS Drum Synth Ready. Press A/S/D/F to play manually, Spacebar for sequencer.");
             if (audioContext?.state === 'suspended') {
                 console.warn("REMINDER: Click panel or press key/space to enable audio.");
