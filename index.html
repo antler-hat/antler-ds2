@@ -253,7 +253,7 @@
         <div class="control-grid">
             <div class="control-group">
                 <label for="v0-pitch">Pitch</label>
-                <div class="knob" id="v0-pitch" data-param="voices.0.pitch" data-min="20" data-max="2000" data-value="60" data-curve="log" tabindex="0"></div>
+                <div class="knob" id="v0-pitch" data-param="voices.0.pitch" data-min="20" data-max="2000" data-value="100" data-curve="log" tabindex="0"></div>
                 <span class="knob-value-display" id="v0-pitch-value"></span>
             </div>
             <div class="control-group">
@@ -270,7 +270,7 @@
             </div>
             <div class="control-group">
                 <label for="v0-cutoff">Cutoff</label>
-                <div class="knob" id="v0-cutoff" data-param="voices.0.cutoff" data-min="40" data-max="20000" data-value="18000" data-curve="log" tabindex="0"></div>
+                <div class="knob" id="v0-cutoff" data-param="voices.0.cutoff" data-min="0" data-max="20000" data-value="0" data-curve="log" tabindex="0"></div>
                 <span class="knob-value-display" id="v0-cutoff-value"></span>
             </div>
             <!-- ADSR Grid -->
@@ -282,7 +282,7 @@
                 </div>
                 <div class="control-group">
                     <label for="v0-decay">D</label>
-                    <div class="knob" id="v0-decay" data-param="voices.0.env.decay" data-min="0.001" data-max="1" data-value="0.15" tabindex="0"></div>
+                    <div class="knob" id="v0-decay" data-param="voices.0.env.decay" data-min="0.001" data-max="0.3" data-value="0.03" tabindex="0"></div>
                     <span class="knob-value-display" id="v0-decay-value"></span>
                 </div>
                 <div class="control-group">
@@ -323,7 +323,7 @@
             </div>
             <div class="control-group">
                 <label for="v1-cutoff">Cutoff</label>
-                <div class="knob" id="v1-cutoff" data-param="voices.1.cutoff" data-min="40" data-max="20000" data-value="16000" data-curve="log" tabindex="0"></div>
+                <div class="knob" id="v1-cutoff" data-param="voices.1.cutoff" data-min="0" data-max="20000" data-value="10000" data-curve="log" tabindex="0"></div>
                 <span class="knob-value-display" id="v1-cutoff-value"></span>
             </div>
              <!-- ADSR Grid -->
@@ -335,7 +335,7 @@
                 </div>
                 <div class="control-group">
                     <label for="v1-decay">D</label>
-                    <div class="knob" id="v1-decay" data-param="voices.1.env.decay" data-min="0.001" data-max="1" data-value="0.02" tabindex="0"></div>
+                    <div class="knob" id="v1-decay" data-param="voices.1.env.decay" data-min="0.001" data-max="0.3" data-value="0.02" tabindex="0"></div>
                     <span class="knob-value-display" id="v1-decay-value"></span>
                 </div>
                 <div class="control-group">
@@ -376,7 +376,7 @@
             </div>
             <div class="control-group">
                 <label for="v2-cutoff">Cutoff</label>
-                <div class="knob" id="v2-cutoff" data-param="voices.2.cutoff" data-min="40" data-max="20000" data-value="15000" data-curve="log" tabindex="0"></div>
+                <div class="knob" id="v2-cutoff" data-param="voices.2.cutoff" data-min="0" data-max="20000" data-value="0" data-curve="log" tabindex="0"></div>
                 <span class="knob-value-display" id="v2-cutoff-value"></span>
             </div>
              <!-- ADSR Grid -->
@@ -388,7 +388,7 @@
                 </div>
                 <div class="control-group">
                     <label for="v2-decay">D</label>
-                    <div class="knob" id="v2-decay" data-param="voices.2.env.decay" data-min="0.001" data-max="1" data-value="0.09" tabindex="0"></div>
+                    <div class="knob" id="v2-decay" data-param="voices.2.env.decay" data-min="0.001" data-max="0.3" data-value="0.09" tabindex="0"></div>
                     <span class="knob-value-display" id="v2-decay-value"></span>
                 </div>
                 <div class="control-group">
@@ -429,7 +429,7 @@
             </div>
             <div class="control-group">
                 <label for="v3-cutoff">Cutoff</label>
-                <div class="knob" id="v3-cutoff" data-param="voices.3.cutoff" data-min="40" data-max="20000" data-value="20000" data-curve="log" tabindex="0"></div>
+                <div class="knob" id="v3-cutoff" data-param="voices.3.cutoff" data-min="0" data-max="20000" data-value="0" data-curve="log" tabindex="0"></div>
                 <span class="knob-value-display" id="v3-cutoff-value"></span>
             </div>
              <!-- ADSR Grid -->
@@ -777,7 +777,7 @@
         const envelopeGain = audioContext.createGain();
 
         // Configure filter
-        filterNode.type = 'lowpass';
+        filterNode.type = 'highpass';
         filterNode.frequency.value = voiceCutoff; // Set initial cutoff
         filterNode.Q.value = 1;                   // Fixed Q for now
 
