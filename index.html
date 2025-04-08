@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS Drum Synth</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
+    </style>
+    <style>
+        :root {
+            --space-base: 15px;
+            --space-sm: 10px;
+            --space-lg: 20px;
+            --grey-medium: #555555;
+            --grey-light: #cccccc;
+            --red-off: #440000;
+            --red-on: #ff0000;
+            --red-glow: rgba(255, 0, 0, 0.7);
+        }
+
+        html {
+            font-size: 10px;
+        }
+        body {
+            margin: 0;
+            background-color: black;
+            color: white;
+            font-family: "Space Mono", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top */
+            min-height: 100vh;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow-x: auto;
+            font-size: 12px;
+            letter-spacing: .1em;
+        }
+        body.dragging {
+            cursor: ns-resize; /* Cursor during knob drag */
+        }
+
+        h1 {
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: var(--space-lg);
+            color: var(--grey-light);
+            text-align: center;
+            width: 100%;
+            letter-spacing: 0.2em;
+        }
+         h2 {
+            font-size: 16px;
+            margin-top: 0;
+            margin-bottom: var(--space-sm);
+            color: var(--grey-light);
+            text-align: center;
+            width: 100%;
+            border-bottom: 1px solid var(--grey-medium);
+            padding-bottom: var(--space-sm);
+         }
+
+
+        .drum-machine-panel {
+            padding: var(--space-lg);
+            display: grid;
+            /* 5 Column Grid Layout: 4 voices + 1 effects/master */
+            grid-template-columns: repeat(5, auto);
+            gap: var(--space-lg) var(--space-lg);
+            min-width: 750px; /* Slightly wider maybe */
+            width: max-content; /* Adjust width based on content */
+            background-color: #101010;
+            border: 1px solid var(--grey-medium);
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .header-area {
+             grid-column: 1 / span 5; /* Span all columns */
+             margin-bottom: var(--space-sm);
+        }
+
+        .module {
+            padding: var(--space-sm);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px; /* Spacing between elements inside a module */
+            min-width: 140px; /* Adjust width per module if needed */
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 5px;
+            position: relative; /* For indicator light positioning */
+        }
+
+        .indicator-light {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--red-off);
+            border-radius: 50%;
+            border: 1px solid #222;
+            box-shadow: inset 0 0 3px rgba(0,0,0,0.6);
+            transition: background-color 0.05s ease-out, box-shadow 0.05s ease-out;
+        }
+
+        .indicator-light.active {
+            background-color: var(--red-on);
+            box-shadow: 0 0 8px var(--red-glow), inset 0 0 3px rgba(255, 200, 200, 0.5);
+        }
+
+        .control-grid {
+             display: grid;
+             grid-template-columns: 1fr 1fr; /* Two controls per row (now 2x2) */
+             gap: var(--space-lg) var(--space-sm); /* Row and column gap */
+             width: 100%;
+        }
+         .adsr-grid {
+             display: grid;
+             grid-template-columns: repeat(4, 1fr); /* 4 ADSR knobs */
+             gap: var(--space-base) 5px; /* Row and column gap */
+             width: 100%;
+             margin-top: var(--space-lg); /* Increase top margin slightly */
+             grid-column: 1 / span 2; /* Span both columns in control-grid */
+         }
+
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            width: 100%;
+            height: 70px; /* Fixed height */
+            justify-content: flex-start;
+            position: relative;
+        }
+
+        label {
+            text-transform: uppercase;
+            color: #bbb;
+            line-height: 1rem;
+            height: 1rem;
+            margin-bottom: 2px;
+            font-size: 10px; /* Smaller labels */
+        }
+
+        .waveform-label {
+            font-size: 16px;
+            height: auto;
+        }
+
+        .knob {
+            width: 35px; /* Slightly smaller knobs */
+            height: 35px;
+            background-color: #282828;
+            border: 1px solid #555;
+            border-radius: 50%;
+            position: relative;
+            cursor: ns-resize;
+            outline: none;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+            margin-bottom: 2px;
+        }
+
+        .knob:before { /* Indicator line */
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 10px; /* Shorter line */
+            background-color: #eee;
+            top: 4px; /* Adjust position */
+            left: 50%;
+            transform: translateX(-50%);
+            transform-origin: 50% 13.5px; /* Adjust rotation origin */
+        }
+
+        .knob:focus {
+            box-shadow: 0 0 0 2px white;
+        }
+
+        /* Value Display */
+        .knob-value-display {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8em;
+            background: black;
+            border-radius: 2.5px;
+            min-width: 30px;
+            text-align: center;
+            display: none; /* Hidden by default */
+            position: absolute;
+            bottom: -1.2em; /* Position below knob */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            padding: 1px 3px;
+        }
+
+        /* Show display when knob is focused OR when dragging */
+        .control-group:has(.knob:focus) .knob-value-display,
+        .control-group.interacting .knob-value-display {
+             display: inline-block;
+        }
+        /* Hide display for knobs with steps even when focused/interacting */
+         .control-group:has(.knob[data-steps]:focus) .knob-value-display,
+         .control-group.interacting:has(.knob[data-steps]) .knob-value-display {
+              display: none;
+         }
+
+         /* Effects/Master Module Layout */
+        #effects-master-module {
+            display: grid;
+            grid-template-rows: auto repeat(4, auto); /* Title + 4 rows of controls */
+            gap: var(--space-lg);
+            align-items: start; /* Align control groups to top */
+        }
+         #effects-master-module h2 {
+             grid-column: 1 / span 2; /* Title spans width if grid used */
+         }
+
+         .effects-control-row {
+             display: grid;
+             grid-template-columns: 1fr 1fr;
+             gap: var(--space-sm);
+             width: 100%;
+             align-items: start;
+         }
+         /* Single controls (Dist, Rev, Vol) can just be a control group */
+
+         /* Specific Grid placements within the panel */
+         #voice-module-0 { grid-column: 1; }
+         #voice-module-1 { grid-column: 2; }
+         #voice-module-2 { grid-column: 3; }
+         #voice-module-3 { grid-column: 4; }
+         #effects-master-module { grid-column: 5; }
+
+    </style>
+</head>
+<body>
+
+<div class="drum-machine-panel" id="drum-machine-panel">
+    <div class="header-area">
+        <h1>JS DRUM SYNTH</h1>
+    </div>
+
+    <!-- Voice 1 (Key A) -->
+    <div class="module voice-module" id="voice-module-0">
+        <h2>VOICE 1 (A)</h2>
+        <div class="indicator-light" id="light-0"></div>
+        <div class="control-grid">
+            <div class="control-group">
+                <label for="v0-pitch">Pitch</label>
+                <div class="knob" id="v0-pitch" data-param="voices.0.pitch" data-min="20" data-max="2000" data-value="60" data-curve="log" tabindex="0"></div>
+                <span class="knob-value-display" id="v0-pitch-value"></span>
+            </div>
+            <div class="control-group">
+                <label for="v0-wave">
+                    <span class="waveform-label" id="v0-wave-indicator">∿</span>
+                </label>
+                <div class="knob" id="v0-wave" data-param="voices.0.wave" data-steps="sine,square,sawtooth,noise" data-value="0" tabindex="0"></div>
+            </div>
+             <!-- ADDED LEVEL & CUTOFF -->
+            <div class="control-group">
+                <label for="v0-level">Level</label>
+                <div class="knob" id="v0-level" data-param="voices.0.level" data-min="0" data-max="1" data-value="0.5" tabindex="0"></div>
+                <span class="knob-value-display" id="v0-level-value"></span>
+            </div>
+            <div class="control-group">
+                <label for="v0-cutoff">Cutoff</label>
+                <div class="knob" id="v0-cutoff" data-param="voices.0.cutoff" data-min="40" data-max="20000" data-value="18000" data-curve="log" tabindex="0"></div>
+                <span class="knob-value-display" id="v0-cutoff-value"></span>
+            </div>
+            <!-- ADSR Grid -->
+            <div class="adsr-grid">
+                <div class="control-group">
+                    <label for="v0-attack">A</label>
+                    <div class="knob" id="v0-attack" data-param="voices.0.env.attack" data-min="0.001" data-max=".02" data-value="0.001" tabindex="0"></div>
+                    <span class="knob-value-display" id="v0-attack-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="v0-decay">D</label>
+                    <div class="knob" id="v0-decay" data-param="voices.0.env.decay" data-min="0.001" data-max="1" data-value="0.15" tabindex="0"></div>
+                    <span class="knob-value-display" id="v0-decay-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="v0-sustain">S</label>
+                    <div class="knob" id="v0-sustain" data-param="voices.0.env.sustain" data-min="0" data-max="1" data-value="0" tabindex="0"></div>
+                    <span class="knob-value-display" id="v0-sustain-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="v0-release">R</label>
+                    <div class="knob" id="v0-release" data-param="voices.0.env.release" data-min="0.001" data-max="1" data-value="0.1" tabindex="0"></div>
+                    <span class="knob-value-display" id="v0-release-value"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice 2 (Key S) -->
+     <div class="module voice-module" id="voice-module-1">
+        <h2>VOICE 2 (S)</h2>
+        <div class="indicator-light" id="light-1"></div>
+        <div class="control-grid">
+            <div class="control-group">
+                <label for="v1-pitch">Pitch</label>
+                <div class="knob" id="v1-pitch" data-param="voices.1.pitch" data-min="20" data-max="2000" data-value="180" data-curve="log" tabindex="0"></div>
+                <span class="knob-value-display" id="v1-pitch-value"></span>
+            </div>
+            <div class="control-group">
+                <label for="v1-wave">
+                    <span class="waveform-label" id="v1-wave-indicator">∿</span>
+                </label>
+                <div class="knob" id="v1-wave" data-param="voices.1.wave" data-steps="sine,square,sawtooth,noise" data-value="3" tabindex="0"></div>
+            </div>
+             <!-- ADDED LEVEL & CUTOFF -->
+             <div class="control-group">
+                <label for="v1-level">Level</label>
+                <div class="knob" id="v1-level" data-param="voices.1.level" data-min="0" data-max="1" data-value="0.5" tabindex="0"></div>
+                <span class="knob-value-display" id="v1-level-value"></span>
+            </div>
+            <div class="control-group">
+                <label for="v1-cutoff">Cutoff</label>
+                <div class="knob" id="v1-cutoff" data-param="voices.1.cutoff" data-min="40" data-max="20000" data-value="16000" data-curve="log" tabindex="0"></div>
+                <span class="knob-value-display" id="v1-cutoff-value"></span>
+            </div>
+             <!-- ADSR Grid -->
+             <div class="adsr-grid">
+                <div class="control-group">
+                    <label for="v1-attack">A</label>
+                    <div class="knob" id="v1-attack" data-param="voices.1.env.attack" data-min="0.001" data-max="1" data-value="0.005" tabindex="0"></div>
+                    <span class="knob-value-display" id="v1-attack-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="v1-decay">D</label>
+                    <div class="knob" id="v1-decay" data-param="voices.1.env.decay" data-min="0.001" data-max="1" data-value="0.02" tabindex="0"></div>
+                    <span class="knob-value-display" id="v1-decay-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="v1-sustain">S</label>
+                    <div class="knob" id="v1-sustain" data-param="voices.1.env.sustain" data-min="0" data-max="1" data-value="0" tabindex="0"></div>
+                    <span class="knob-value-display" id="v1-sustain-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="v1-release">R</label>
+                    <div class="knob" id="v1-release" data-param="voices.1.env.release" data-min="0.001" data-max="1" data-value="0.05" tabindex="0"></div>
+                    <span class="knob-value-display" id="v1-release-value"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice 3 (Key D) -->
+     <div class="module voice-module" id="voice-module-2">
+        <h2>VOICE 3 (D)</h2>
+        <div class="indicator-light" id="light-2"></div>
+        <div class="control-grid">
+            <div class="control-group">
+                <label for="v2-pitch">Pitch</label>
+                <div class="knob" id="v2-pitch" data-param="voices.2.pitch" data-min="20" data-max="4000" data-value="800" data-curve="log" tabindex="0"></div>
+                <span class="knob-value-display" id="v2-pitch-value"></span>
+            </div>
+            <div class="control-group">
+                <label for="v2-wave">
+                    <span class="waveform-label" id="v2-wave-indicator">∿</span>
+                </label>
+                <div class="knob" id="v2-wave" data-param="voices.2.wave" data-steps="sine,square,sawtooth,noise" data-value="3" tabindex="0"></div>
+            </div>
+             <!-- ADDED LEVEL & CUTOFF -->
+             <div class="control-group">
+                <label for="v2-level">Level</label>
+                <div class="knob" id="v2-level" data-param="voices.2.level" data-min="0" data-max="1" data-value="0.5" tabindex="0"></div>
+                <span class="knob-value-display" id="v2-level-value"></span>
+            </div>
+            <div class="control-group">
+                <label for="v2-cutoff">Cutoff</label>
+                <div class="knob" id="v2-cutoff" data-param="voices.2.cutoff" data-min="40" data-max="20000" data-value="15000" data-curve="log" tabindex="0"></div>
+                <span class="knob-value-display" id="v2-cutoff-value"></span>
+            </div>
+             <!-- ADSR Grid -->
+             <div class="adsr-grid">
+                <div class="control-group">
+                    <label for="v2-attack">A</label>
+                    <div class="knob" id="v2-attack" data-param="voices.2.env.attack" data-min="0.001" data-max="0.05" data-value="0.001" tabindex="0"></div>
+                    <span class="knob-value-display" id="v2-attack-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="v2-decay">D</label>
+                    <div class="knob" id="v2-decay" data-param="voices.2.env.decay" data-min="0.001" data-max="1" data-value="0.09" tabindex="0"></div>
+                    <span class="knob-value-display" id="v2-decay-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="v2-sustain">S</label>
+                    <div class="knob" id="v2-sustain" data-param="voices.2.env.sustain" data-min="0" data-max="1" data-value="0.1" tabindex="0"></div>
+                    <span class="knob-value-display" id="v2-sustain-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="v2-release">R</label>
+                    <div class="knob" id="v2-release" data-param="voices.2.env.release" data-min="0.001" data-max="1" data-value="0.3" tabindex="0"></div>
+                    <span class="knob-value-display" id="v2-release-value"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice 4 (Key F) -->
+     <div class="module voice-module" id="voice-module-3">
+        <h2>VOICE 4 (F)</h2>
+        <div class="indicator-light" id="light-3"></div>
+        <div class="control-grid">
+            <div class="control-group">
+                <label for="v3-pitch">Pitch</label>
+                <div class="knob" id="v3-pitch" data-param="voices.3.pitch" data-min="100" data-max="8000" data-value="1000" data-curve="log" tabindex="0"></div>
+                <span class="knob-value-display" id="v3-pitch-value"></span>
+            </div>
+            <div class="control-group">
+                <label for="v3-wave">
+                    <span class="waveform-label" id="v3-wave-indicator">∿</span>
+                </label>
+                <div class="knob" id="v3-wave" data-param="voices.3.wave" data-steps="sine,square,sawtooth,noise" data-value="0" tabindex="0"></div>
+            </div>
+             <!-- ADDED LEVEL & CUTOFF -->
+             <div class="control-group">
+                <label for="v3-level">Level</label>
+                <div class="knob" id="v3-level" data-param="voices.3.level" data-min="0" data-max="1" data-value="0.5" tabindex="0"></div>
+                <span class="knob-value-display" id="v3-level-value"></span>
+            </div>
+            <div class="control-group">
+                <label for="v3-cutoff">Cutoff</label>
+                <div class="knob" id="v3-cutoff" data-param="voices.3.cutoff" data-min="40" data-max="20000" data-value="20000" data-curve="log" tabindex="0"></div>
+                <span class="knob-value-display" id="v3-cutoff-value"></span>
+            </div>
+             <!-- ADSR Grid -->
+             <div class="adsr-grid">
+                <div class="control-group">
+                    <label for="v3-attack">A</label>
+                    <div class="knob" id="v3-attack" data-param="voices.3.env.attack" data-min="0.001" data-max="0.02" data-value="0.001" tabindex="0"></div>
+                    <span class="knob-value-display" id="v3-attack-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="v3-decay">D</label>
+                    <div class="knob" id="v3-decay" data-param="voices.3.env.decay" data-min="0.001" data-max="0.5" data-value="0.05" tabindex="0"></div>
+                    <span class="knob-value-display" id="v3-decay-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="v3-sustain">S</label>
+                    <div class="knob" id="v3-sustain" data-param="voices.3.env.sustain" data-min="0" data-max="1" data-value="0" tabindex="0"></div>
+                    <span class="knob-value-display" id="v3-sustain-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="v3-release">R</label>
+                    <div class="knob" id="v3-release" data-param="voices.3.env.release" data-min="0.001" data-max="0.5" data-value="0.03" tabindex="0"></div>
+                    <span class="knob-value-display" id="v3-release-value"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Effects & Master -->
+    <div class="module" id="effects-master-module">
+         <h2>FX & MASTER</h2>
+         <div class="effects-control-row">
+             <div class="control-group">
+                <label for="delay-time">Dly Time</label>
+                <div class="knob" id="delay-time" data-param="effects.delay.time" data-min="0.01" data-max="1" data-value="0.15" data-curve="log" tabindex="0"></div>
+                <span class="knob-value-display" id="delay-time-value"></span>
+            </div>
+            <div class="control-group">
+                <label for="delay-feedback">Dly Fdbk</label>
+                <div class="knob" id="delay-feedback" data-param="effects.delay.feedback" data-min="0" data-max="0.95" data-value=".4" tabindex="0"></div>
+                <span class="knob-value-display" id="delay-feedback-value"></span>
+            </div>
+         </div>
+         <div class="effects-control-row">
+            <div class="control-group">
+                <label for="delay-level">Dly Level</label>
+                <div class="knob" id="delay-level" data-param="effects.delay.level" data-min="0" data-max="1" data-value="0" tabindex="0"></div>
+                <span class="knob-value-display" id="delay-level-value"></span>
+            </div>
+            <div class="control-group">
+                <label for="reverb-level">Reverb</label>
+                <div class="knob" id="reverb-level" data-param="effects.reverb.level" data-min="0" data-max="1" data-value="0" tabindex="0"></div>
+                <span class="knob-value-display" id="reverb-level-value"></span>
+            </div>
+         </div>
+          <div class="effects-control-row">
+             <div class="control-group">
+                <label for="distortion-amount">Drive</label>
+                <div class="knob" id="distortion-amount" data-param="effects.distortion.amount" data-min="0" data-max="100" data-value="0" tabindex="0"></div>
+                <span class="knob-value-display" id="distortion-amount-value"></span>
+            </div>
+             <div class="control-group"></div> <!-- Placeholder -->
+         </div>
+         <div class="effects-control-row">
+             <div class="control-group"></div> <!-- Placeholder -->
+            <div class="control-group">
+                <label for="volume">Volume</label>
+                <div class="knob" id="volume" data-param="masterVolume" data-min="0" data-max="1" data-value="0.6" tabindex="0"></div>
+                <span class="knob-value-display" id="volume-value"></span>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    // ----- UI ELEMENTS -----
+    const drumMachinePanel = document.getElementById('drum-machine-panel');
+    let knobs; // Will be populated later
+    const indicatorLights = [
+        document.getElementById('light-0'),
+        document.getElementById('light-1'),
+        document.getElementById('light-2'),
+        document.getElementById('light-3'),
+    ];
+    const waveformIndicators = [
+        document.getElementById('v0-wave-indicator'),
+        document.getElementById('v1-wave-indicator'),
+        document.getElementById('v2-wave-indicator'),
+        document.getElementById('v3-wave-indicator'),
+    ];
+
+    // ----- AUDIO CONTEXT & NODES -----
+    let audioContext;
+    let masterGain;
+    let effectsInput;
+    let distortionPreGain;
+    let distortion;
+    let delay, delayFeedbackGain, delayWetGain;
+    let reverb, reverbWetGain;
+    let noiseBuffer; // Shared noise buffer
+
+    let isAudioInitialized = false;
+    let isAudioResumed = false; // Tracks if user interaction has successfully resumed context
+
+    // ----- SYNTH PARAMETERS -----
+    const WAVEFORMS = ['sine', 'square', 'sawtooth', 'noise'];
+    const WAVEFORM_INDICATORS = ['∿', '⨅', '⩘', '░']; // Using a block for noise
+
+    // Default parameters structure - Added level & cutoff defaults
+    const params = {
+        voices: [
+            // Voice 0 (A) - Kick-ish
+            {
+                pitch: 60, wave: 0, level: 0.8, cutoff: 18000,
+                env: { attack: 0.01, decay: 0.15, sustain: 0, release: 0.1 }
+            },
+            // Voice 1 (S) - Snare-ish
+            {
+                pitch: 180, wave: 3, level: 0.7, cutoff: 16000,
+                env: { attack: 0.005, decay: 0.12, sustain: 0, release: 0.05 }
+            },
+            // Voice 2 (D) - Tom/Perc
+            {
+                pitch: 800, wave: 3, level: 0.7, cutoff: 15000,
+                env: { attack: 0.002, decay: 0.08, sustain: 0, release: 0.1 }
+            },
+            // Voice 3 (F) - HiHat-ish
+            {
+                pitch: 3500, wave: 3, level: 0.6, cutoff: 12000,
+                env: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.03 }
+            }
+        ],
+        effects: {
+            distortion: { amount: 0 },
+            delay: { time: 0.15, feedback: 0.4, level: 0 },
+            reverb: { level: 0 }
+        },
+        masterVolume: 0.6
+    };
+
+    // To keep track of active nodes for each voice (to stop them on retrigger)
+    let activeSources = [[], [], [], []]; // Holds {osc?, noise?, levelGain, filterNode, envGain}
+
+    // ----- KEY MAPPING -----
+    const keyToVoiceIndex = {
+        'KeyA': 0,
+        'KeyS': 1,
+        'KeyD': 2,
+        'KeyF': 3, // Changed from KeyR
+    };
+
+    // ----- UTILITY FUNCTIONS -----
+    function createNoiseBuffer(context) {
+        const bufferSize = context.sampleRate * 2; // 2 seconds of noise
+        const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+        const output = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            output[i] = Math.random() * 2 - 1; // Generate white noise
+        }
+        return buffer;
+    }
+
+    function makeDistortionCurve(amount, context) {
+        if (!context) return null;
+        // Use amount (0-100) to control the sharpness/gain inside tanh
+        const k = Math.max(0, amount); // Ensure non-negative
+        const n_samples = 44100;
+        const curve = new Float32Array(n_samples);
+
+        // More drive = sharper curve. Adjust multiplier (e.g., * 10) for more intensity.
+        const curveSharpness = 1 + (k / 100) * 10; // Sharpness factor from 1 up to 11
+
+        for (let i = 0; i < n_samples; ++i) {
+            let x = i * 2 / n_samples - 1; // Input signal range -1 to 1
+            // Apply tanh with sharpness controlled by amount
+            curve[i] = Math.tanh(x * curveSharpness);
+        }
+        return curve;
+    }
+
+    function createReverbImpulse(context, duration = 1.5, decay = 2.0) {
+        const sampleRate = context.sampleRate;
+        const length = sampleRate * duration;
+        const impulse = context.createBuffer(2, length, sampleRate);
+        const impulseL = impulse.getChannelData(0);
+        const impulseR = impulse.getChannelData(1);
+        for (let i = 0; i < length; i++) {
+            const n = length - i;
+            impulseL[i] = (Math.random() * 2 - 1) * Math.pow(n / length, decay);
+            impulseR[i] = (Math.random() * 2 - 1) * Math.pow(n / length, decay);
+        }
+        return impulse;
+    }
+
+    // Format knob values for display
+    function formatKnobValue(value, knobId) {
+        if (typeof value !== 'number' || !isFinite(value)) return '---';
+
+        if (knobId) {
+            if (knobId.includes('attack') || knobId.includes('decay') || knobId.includes('release') || knobId.includes('delay-time')) {
+                return value < 1 ? (value * 1000).toFixed(0) + 'ms' : value.toFixed(2) + 's';
+            } else if (knobId.includes('pitch') || knobId.includes('cutoff')) {
+                // Format Frequency
+                return value >= 1000 ? (value / 1000).toFixed(1) + 'k' : value.toFixed(0);
+            } else if (knobId.includes('level') || knobId.includes('feedback') || knobId.includes('sustain') || knobId.includes('volume')) {
+                 return value.toFixed(2); // Gain/Level values
+            } else if (knobId.includes('distortion-amount')) {
+                 return value.toFixed(0); // Drive value
+            }
+        }
+        // Default fallback
+        return value.toFixed(2);
+    }
+
+
+    // Update the text display for a specific knob
+    function updateKnobValueDisplay(knob, value) {
+        if (knob && !knob.dataset.steps) {
+            const displayId = knob.id + '-value';
+            const displayElement = document.getElementById(displayId);
+            if (displayElement) {
+                displayElement.textContent = formatKnobValue(value, knob.id);
+            }
+        }
+    }
+
+    // ----- AUDIO CONTEXT & INITIALIZATION -----
+    async function ensureAudioContextResumed() {
+        if (!audioContext) return false;
+        if (audioContext.state === 'running') {
+            if (!isAudioResumed) {
+                isAudioResumed = true;
+                masterGain.gain.linearRampToValueAtTime(params.masterVolume, audioContext.currentTime + 0.05);
+            }
+            return true;
+        }
+        if (audioContext.state === 'suspended') {
+            try {
+                await audioContext.resume();
+                if (audioContext.state === 'running') {
+                    console.log("AudioContext Resumed.");
+                    isAudioResumed = true;
+                    masterGain.gain.linearRampToValueAtTime(params.masterVolume, audioContext.currentTime + 0.05);
+                    return true;
+                } else { isAudioResumed = false; return false; }
+            } catch (e) { console.error("Error resuming:", e); isAudioResumed = false; return false; }
+        }
+        return false;
+    }
+
+    async function initAudio() {
+        if (isAudioInitialized) return;
+        console.log("Initializing AudioContext...");
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            if (!audioContext) throw new Error("Web Audio API not supported.");
+            isAudioInitialized = true;
+            console.log("Initial State:", audioContext.state);
+
+            masterGain = audioContext.createGain();
+            masterGain.gain.value = 0; // Start muted
+
+            effectsInput = audioContext.createGain();
+            // effectsInput.connect(masterGain); // <<< REMOVE OR COMMENT OUT THIS LINE (Dry path)
+
+            distortionPreGain = audioContext.createGain();
+            distortion = audioContext.createWaveShaper();
+            delay = audioContext.createDelay(2.0);
+            delayFeedbackGain = audioContext.createGain();
+            delayWetGain = audioContext.createGain();
+            reverb = audioContext.createConvolver();
+            reverbWetGain = audioContext.createGain();
+
+            noiseBuffer = createNoiseBuffer(audioContext);
+            reverb.buffer = createReverbImpulse(audioContext);
+
+            // Connect Effects Chain: Input -> PreGain -> Dist -> (Sends + Master)
+            effectsInput.connect(distortionPreGain);
+            distortionPreGain.connect(distortion);
+
+            // Connect Distortion output to the Master Gain (this is the main "processed" signal)
+            distortion.connect(masterGain); // <<< ADD THIS CONNECTION
+
+            // Distortion also sends to Delay Loop & Wet Out
+            distortion.connect(delay);
+            delay.connect(delayFeedbackGain);
+            delayFeedbackGain.connect(delay);
+            delay.connect(delayWetGain);
+            delayWetGain.connect(masterGain); // Delay Wet signal to Master
+
+            // Distortion also sends to Reverb Wet Out
+            distortion.connect(reverb);
+            reverb.connect(reverbWetGain);
+            reverbWetGain.connect(masterGain); // Reverb Wet signal to Master
+
+            // Master Gain -> Destination
+            masterGain.connect(audioContext.destination);
+
+            // Set initial FX params (Remove duplicate distortion call)
+            updateParameterValue('effects.distortion.amount', params.effects.distortion.amount, true);
+            // updateParameterValue('effects.distortion.amount', params.effects.distortion.amount, true); // << REMOVE DUPLICATE
+            updateParameterValue('effects.delay.time', params.effects.delay.time, true);
+            updateParameterValue('effects.delay.feedback', params.effects.delay.feedback, true);
+            updateParameterValue('effects.delay.level', params.effects.delay.level, true);
+            updateParameterValue('effects.reverb.level', params.effects.reverb.level, true);
+            updateParameterValue('masterVolume', params.masterVolume, true);
+
+            // ... (rest of initAudio)
+
+        } catch (e) {
+            // ... error handling ...
+        }
+    }
+
+    // ----- DRUM VOICE TRIGGERING -----
+    function triggerDrumSound(voiceIndex) {
+        if (!isAudioInitialized || !isAudioResumed || !audioContext) return;
+
+        const voiceParams = params.voices[voiceIndex];
+        const waveType = WAVEFORMS[voiceParams.wave];
+        const now = audioContext.currentTime;
+        const env = voiceParams.env;
+        const voiceLevel = voiceParams.level;   // <<< Get Level
+        const voiceCutoff = voiceParams.cutoff; // <<< Get Cutoff
+
+        // --- Stop Previous Sounds for this Voice ---
+        activeSources[voiceIndex].forEach(nodes => {
+             try {
+                 if (nodes.osc) { nodes.osc.stop(now); nodes.osc.disconnect(); }
+                 if (nodes.noise) { nodes.noise.stop(now); nodes.noise.disconnect(); }
+                 // Disconnect the other nodes in the chain for this hit
+                 if (nodes.filterNode) nodes.filterNode.disconnect();
+                 if (nodes.levelGain) nodes.levelGain.disconnect();
+                 if (nodes.envGain) nodes.envGain.disconnect();
+             } catch (e) { /* Ignore */ }
+        });
+        activeSources[voiceIndex] = []; // Clear
+
+
+        // --- Create Nodes for this Hit ---
+        let sourceNode;
+        const sourceGain = audioContext.createGain();
+        const levelGain = audioContext.createGain();      // <<< Level Gain Node
+        const filterNode = audioContext.createBiquadFilter(); // <<< Filter Node
+        const envelopeGain = audioContext.createGain();
+
+        // Configure filter
+        filterNode.type = 'lowpass';
+        filterNode.frequency.value = voiceCutoff; // Set initial cutoff
+        filterNode.Q.value = 1;                   // Fixed Q for now
+
+        // Configure level gain
+        levelGain.gain.value = voiceLevel; // Set initial level
+
+        // Create Source
+        const nodesToStore = { levelGain: levelGain, filterNode: filterNode, envGain: envelopeGain }; // Common nodes
+        if (waveType === 'noise') {
+            sourceNode = audioContext.createBufferSource();
+            sourceNode.buffer = noiseBuffer;
+            sourceNode.loop = false;
+            nodesToStore.noise = sourceNode;
+        } else {
+            sourceNode = audioContext.createOscillator();
+            sourceNode.type = waveType;
+            sourceNode.frequency.value = voiceParams.pitch;
+            nodesToStore.osc = sourceNode;
+        }
+        activeSources[voiceIndex].push(nodesToStore); // Store refs
+
+        // --- Connect the Audio Path ---
+        // Source -> SourceGain -> LevelGain -> Filter -> EnvelopeGain -> EffectsInput
+        sourceNode.connect(sourceGain);
+        sourceGain.connect(levelGain);
+        levelGain.connect(filterNode);
+        filterNode.connect(envelopeGain);
+        envelopeGain.connect(effectsInput);
+
+        // Use full gain from the source itself
+        sourceGain.gain.value = 1;
+
+
+        // --- Apply ADSR Envelope to envelopeGain ---
+        const peakLevel = 1.0;
+        const sustainLevel = Math.max(0.0001, env.sustain * peakLevel);
+        const attackTime = Math.max(0.001, env.attack);
+        const decayTime = Math.max(0.001, env.decay);
+        const releaseTime = Math.max(0.001, env.release);
+
+        envelopeGain.gain.cancelScheduledValues(now);
+        envelopeGain.gain.setValueAtTime(0, now);
+        envelopeGain.gain.linearRampToValueAtTime(peakLevel, now + attackTime);
+        envelopeGain.gain.linearRampToValueAtTime(sustainLevel, now + attackTime + decayTime);
+
+        const totalDuration = attackTime + decayTime + releaseTime;
+        // Ensure sustain level is held before release ramp starts
+        envelopeGain.gain.setValueAtTime(sustainLevel, now + attackTime + decayTime);
+        envelopeGain.gain.linearRampToValueAtTime(0.00001, now + totalDuration);
+
+        // Start the source node
+        sourceNode.start(now);
+
+        // Schedule the source node to stop automatically
+        try {
+            if (sourceNode instanceof AudioBufferSourceNode || sourceNode instanceof OscillatorNode) {
+                 sourceNode.stop(now + totalDuration + 0.1); // Stop slightly after env ends
+             }
+        } catch (e) { /* Ignore */ }
+
+
+        // --- Visual Feedback ---
+        const light = indicatorLights[voiceIndex];
+        light.classList.add('active');
+        setTimeout(() => {
+            light.classList.remove('active');
+        }, 100);
+    }
+
+
+    // ----- UI UPDATE FUNCTIONS -----
+    function updateKnobVisual(knob, valueForRotation, actualAudioValue) {
+        knob.dataset.actualValue = typeof actualAudioValue === 'number' ?
+            actualAudioValue.toFixed(5) : String(actualAudioValue);
+
+        const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null;
+        let percentage = Math.max(0, Math.min(1, valueForRotation));
+
+        if (steps) {
+            const numSteps = steps.length;
+            const stepIndex = numSteps > 1 ? Math.round(percentage * (numSteps - 1)) : 0;
+             if (knob.id.includes('-wave')) {
+                 const voiceIndex = parseInt(knob.id.match(/v(\d+)-/)[1]);
+                 if (waveformIndicators[voiceIndex]) {
+                     waveformIndicators[voiceIndex].textContent = WAVEFORM_INDICATORS[stepIndex] || '?';
+                 }
+             }
+        } else {
+            updateKnobValueDisplay(knob, actualAudioValue);
+        }
+
+        const rotation = -135 + (percentage * 270);
+        knob.style.transform = `rotate(${rotation}deg)`;
+    }
+
+    // Updates the internal params object AND the relevant Web Audio node (for FX/Master only now)
+    function updateParameterValue(paramPath, value, forceUpdate = false) {
+        const parts = paramPath.split('.');
+        let currentParamObj = params;
+
+         // 1. Update Internal Parameter Object
+         try {
+
+             for (let i = 0; i < parts.length - 1; i++) {
+                if (!currentParamObj[parts[i]]) currentParamObj[parts[i]] = {};
+                currentParamObj = currentParamObj[parts[i]];
+            }
+            const finalKey = parts[parts.length - 1];
+             if (typeof value === 'string' && !isNaN(parseFloat(value))) {
+                 value = parseFloat(value);
+             }
+            currentParamObj[finalKey] = value;
+        } catch (e) {
+            console.error("Error updating internal params:", paramPath, value, e);
+            return;
+        }
+
+         // 2. Update Web Audio Node (Only for FX and Master Volume here)
+         if (isAudioInitialized && (isAudioResumed || forceUpdate) && audioContext) {
+             const now = audioContext.currentTime;
+             const rampTime = 0.01; // Use for smooth gain changes
+
+            try {
+                if (paramPath === 'masterVolume' && masterGain) {
+                    masterGain.gain.setTargetAtTime(value, now, rampTime);
+
+                } else if (paramPath === 'effects.distortion.amount' && distortion && distortionPreGain) { // <<< CHECK BOTH NODES
+                    // Control Pre-Gain based on 'value' (0-100)
+                    // Map 0-100 to a gain range, e.g., 1x to ~10x (adjust multiplier as needed)
+                    const preGainValue = 1 + (value / 100) * 9;
+                    distortionPreGain.gain.setTargetAtTime(preGainValue, now, rampTime);
+
+                    // Update the WaveShaper curve based on 'value'
+                    distortion.curve = makeDistortionCurve(value, audioContext);
+
+                    // Adjust oversampling based on drive amount
+                    distortion.oversample = value > 15 ? '4x' : (value > 5 ? '2x' : 'none'); // More aggressive oversampling trigger
+
+                } else if (paramPath === 'effects.delay.time' && delay) {
+                    delay.delayTime.setTargetAtTime(value, now, rampTime);
+                } else if (paramPath === 'effects.delay.feedback' && delayFeedbackGain) {
+                    delayFeedbackGain.gain.setTargetAtTime(value, now, rampTime);
+                } else if (paramPath === 'effects.delay.level' && delayWetGain) {
+                    delayWetGain.gain.setTargetAtTime(value, now, rampTime);
+                } else if (paramPath === 'effects.reverb.level' && reverbWetGain) {
+                    reverbWetGain.gain.setTargetAtTime(value, now, rampTime);
+                }
+                // Voice params are handled in triggerDrumSound
+
+            } catch (e) {
+                console.error(`Error setting AudioNode param ${paramPath}:`, e, "Value:", value);
+            }
+        }
+    }
+
+    // Calculates value/percentage and updates knob visual & internal params
+    function updateParameterFromKnob(knob, newValue, forceUpdate = false) {
+        const paramPath = knob.dataset.param;
+        const min = parseFloat(knob.dataset.min);
+        const max = parseFloat(knob.dataset.max);
+        const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null;
+        const isLog = knob.dataset.curve === 'log';
+
+        let uiValue = newValue;
+        let actualAudioValue;
+        let percentageForVisual = 0.5;
+
+         if (steps) {
+             const stepIndex = Math.max(0, Math.min(steps.length - 1, Math.round(parseFloat(newValue))));
+             uiValue = stepIndex;
+             actualAudioValue = stepIndex; // The internal param stores the index
+             knob.dataset.value = uiValue;
+             percentageForVisual = steps.length > 1 ? stepIndex / (steps.length - 1) : 0.5;
+         } else {
+             const numericValue = parseFloat(newValue);
+             uiValue = Math.max(min, Math.min(max, numericValue)); // Clamp for safety
+             actualAudioValue = uiValue; // Store the clamped float value
+             knob.dataset.value = uiValue.toFixed(5); // Store precise value in dataset
+
+             if (isLog && min > 0) {
+                 if (uiValue <= min) percentageForVisual = 0;
+                 else if (uiValue >= max) percentageForVisual = 1;
+                 else percentageForVisual = Math.log(uiValue / min) / Math.log(max / min);
+             } else { // Linear
+                 const range = max - min;
+                 percentageForVisual = range > 0 ? (actualAudioValue - min) / range : 0.5;
+             }
+         }
+
+         percentageForVisual = Math.max(0, Math.min(1, isNaN(percentageForVisual) ? 0.5 : percentageForVisual));
+
+         updateKnobVisual(knob, percentageForVisual, actualAudioValue);
+         updateParameterValue(paramPath, actualAudioValue, forceUpdate); // Update internal state
+    }
+
+
+    // Initialize or update all knobs based on their data attributes
+    function updateAllKnobs(forceUpdate = false) {
+        if (!knobs) knobs = drumMachinePanel.querySelectorAll('.knob');
+        knobs.forEach(knob => {
+            const initialValueAttr = knob.getAttribute('data-value');
+            const currentDatasetValue = knob.dataset.value;
+            let valueToUse = (forceUpdate || currentDatasetValue === undefined || currentDatasetValue === null)
+                           ? initialValueAttr
+                           : currentDatasetValue;
+
+            if (valueToUse !== null) {
+                 updateParameterFromKnob(knob, valueToUse, forceUpdate);
+            } else {
+                 console.warn("Knob missing value:", knob.id);
+            }
+             if (!knob.dataset.steps) {
+                 const displayId = knob.id + '-value';
+                 const displayElement = document.getElementById(displayId);
+                 if (displayElement && document.activeElement !== knob) {
+                      displayElement.style.display = 'none';
+                 }
+             }
+        });
+    }
+
+    // ----- EVENT LISTENERS -----
+
+    // -- Keyboard Input for Triggering Drums --
+    document.addEventListener('keydown', async (e) => {
+        if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+
+        // Handle Drum Triggers
+        const voiceIndex = keyToVoiceIndex[e.code];
+        if (voiceIndex !== undefined) {
+            e.preventDefault();
+            let canPlay = isAudioResumed;
+            if (!canPlay && isAudioInitialized) canPlay = await ensureAudioContextResumed();
+            if (canPlay) triggerDrumSound(voiceIndex);
+            else console.warn("Audio context not running.");
+        }
+
+        // Handle Knob Keyboard Control
+         if (document.activeElement && document.activeElement.classList.contains('knob')) {
+             const focusedKnob = document.activeElement;
+             if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                 e.preventDefault();
+                 handleKnobArrowKey(focusedKnob, e.key === 'ArrowLeft' ? -1 : 1, e.shiftKey);
+             } else if (e.key >= '0' && e.key <= '9') {
+                 e.preventDefault();
+                 handleKnobNumberKey(focusedKnob, parseInt(e.key, 10));
+             }
+         }
+    });
+
+     // --- Knob Keyboard Control Helpers ---
+     // (getKnobPercentage, handleKnobArrowKey, handleKnobNumberKey remain the same as previous version)
+      function getKnobPercentage(knob) {
+         const min = parseFloat(knob.dataset.min); const max = parseFloat(knob.dataset.max);
+         const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null;
+         const isLog = knob.dataset.curve === 'log' && min > 0;
+         let currentValueStr = knob.dataset.value;
+         let percentage = 0.5;
+         if (currentValueStr === undefined || currentValueStr === null) return 0.5;
+         if (steps) {
+             const numSteps = steps.length; const stepIndex = parseInt(currentValueStr);
+             percentage = numSteps > 1 ? stepIndex / (numSteps - 1) : 0.5;
+         } else {
+              let currentValue = parseFloat(knob.dataset.actualValue || currentValueStr);
+             if (isLog) {
+                 if (currentValue <= min) percentage = 0;
+                 else if (currentValue >= max) percentage = 1;
+                 else percentage = Math.log(currentValue / min) / Math.log(max / min);
+             } else {
+                 const range = max - min; percentage = range > 0 ? (currentValue - min) / range : 0.5;
+             }
+         } return Math.max(0, Math.min(1, isNaN(percentage) ? 0.5 : percentage));
+     }
+     function handleKnobArrowKey(knob, direction, isShift) {
+         const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null;
+         const min = parseFloat(knob.dataset.min); const max = parseFloat(knob.dataset.max);
+         const isLog = knob.dataset.curve === 'log' && min > 0;
+         let currentPercentage = getKnobPercentage(knob); let newValue;
+         if (steps) {
+             const numSteps = steps.length; let currentStepIndex = Math.round(currentPercentage * (numSteps - 1));
+             let stepChange = direction * (isShift ? 2 : 1); newValue = Math.max(0, Math.min(numSteps - 1, currentStepIndex + stepChange));
+         } else {
+             let percentageChange = direction * (isShift ? 0.1 : 0.01);
+             let newPercentage = Math.max(0, Math.min(1, currentPercentage + percentageChange));
+             if (isLog) { newValue = min * Math.pow(max / min, newPercentage); }
+             else { const range = max - min; newValue = min + newPercentage * range; }
+             newValue = Math.max(min, Math.min(max, newValue));
+         } updateParameterFromKnob(knob, newValue);
+     }
+     function handleKnobNumberKey(knob, number) {
+         const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null;
+         const min = parseFloat(knob.dataset.min); const max = parseFloat(knob.dataset.max);
+         const isLog = knob.dataset.curve === 'log' && min > 0; let targetValue;
+         if (steps) {
+              const numSteps = steps.length; if (numSteps === 0) return;
+              let targetIndex = (number === 0) ? numSteps - 1 : number - 1; targetValue = Math.max(0, Math.min(numSteps - 1, targetIndex));
+         } else {
+             let currentActualValue = parseFloat(knob.dataset.actualValue || knob.dataset.value || '0'); const epsilon = 1e-7;
+             let targetPercentage = (number === 0) ? (Math.abs(currentActualValue - min) < epsilon ? 1.0 : 0.0) : number / 10.0;
+             if (isLog) { targetValue = min * Math.pow(max / min, targetPercentage); }
+             else { const range = max - min; targetValue = min + targetPercentage * range; }
+             targetValue = Math.max(min, Math.min(max, targetValue));
+         } updateParameterFromKnob(knob, targetValue);
+     }
+
+
+    // -- Mouse Input for Knobs --
+    // (isDragging, dragKnob, startY, startValuePercentage, handleKnobMouseMove, stopDrag, setupKnobListeners remain the same)
+    let isDragging = false; let dragKnob = null; let startY = 0; let startValuePercentage = 0;
+    function handleKnobMouseMove(e) {
+        if (!isDragging || !dragKnob) return; e.preventDefault();
+        const currentY = e.clientY; const deltaY = startY - currentY;
+        const steps = dragKnob.dataset.steps ? dragKnob.dataset.steps.split(',') : null;
+        const min = parseFloat(dragKnob.dataset.min); const max = parseFloat(dragKnob.dataset.max);
+        const isLog = dragKnob.dataset.curve === 'log' && min > 0; let newValue;
+        if (steps) {
+            const pixelsPerStep = 20; const totalSteps = steps.length; if (totalSteps <= 1) return;
+            const totalDragPixelsForRange = pixelsPerStep * (totalSteps - 1);
+            const percentageChange = totalDragPixelsForRange > 0 ? (deltaY / totalDragPixelsForRange) : 0;
+            let newPercentage = Math.max(0, Math.min(1, startValuePercentage + percentageChange));
+            newValue = Math.round(newPercentage * (totalSteps - 1));
+        } else {
+            const dragRangePixels = 150; const deltaPercentage = deltaY / dragRangePixels;
+            let newPercentage = Math.max(0, Math.min(1, startValuePercentage + deltaPercentage));
+            if (isLog) {
+                 const epsilon = 1e-9; const clampedPercentage = Math.max(epsilon, Math.min(1 - epsilon, newPercentage));
+                 if (min > 0 && max > min) newValue = min * Math.pow(max / min, clampedPercentage);
+                 else newValue = (newPercentage > 0.5) ? max : min;
+            } else { const range = max - min; newValue = min + newPercentage * range; }
+             newValue = Math.max(min, Math.min(max, newValue));
+        }
+        let currentValueInDataStr = dragKnob.dataset.value; const tolerance = 1e-6;
+        if (steps) { if (newValue !== parseInt(currentValueInDataStr)) { updateParameterFromKnob(dragKnob, newValue); } }
+        else { if (Math.abs(newValue - parseFloat(currentValueInDataStr)) > tolerance) { updateParameterFromKnob(dragKnob, newValue); } }
+    }
+    function stopDrag() {
+        if (isDragging && dragKnob) { dragKnob.closest('.control-group')?.classList.remove('interacting'); }
+        if (isDragging) {
+            isDragging = false; dragKnob = null; document.body.classList.remove('dragging');
+            document.removeEventListener('mousemove', handleKnobMouseMove);
+            document.removeEventListener('mouseup', stopDrag);
+            document.removeEventListener('mouseleave', stopDrag);
+        }
+    }
+    function setupKnobListeners() {
+        if (!knobs) knobs = drumMachinePanel.querySelectorAll('.knob');
+        knobs.forEach(knob => {
+            const controlGroup = knob.closest('.control-group'); const isStepped = knob.hasAttribute('data-steps');
+            const valueDisplayId = knob.id + '-value'; const valueDisplay = document.getElementById(valueDisplayId);
+             if (!isStepped && valueDisplay) {
+                 knob.addEventListener('focus', () => {
+                     const currentVal = parseFloat(knob.dataset.actualValue || knob.dataset.value || '0');
+                     updateKnobValueDisplay(knob, currentVal); valueDisplay.style.display = 'inline-block';
+                 });
+                 knob.addEventListener('blur', () => { if (!isDragging || dragKnob !== knob) { valueDisplay.style.display = 'none'; } controlGroup?.classList.remove('interacting'); });
+             }
+            knob.addEventListener('mousedown', async (e) => {
+                 let canInteract = isAudioResumed; if (!canInteract && isAudioInitialized) canInteract = await ensureAudioContextResumed(); if (!isAudioInitialized || !canInteract) return;
+                e.preventDefault(); isDragging = true; dragKnob = knob; startY = e.clientY; startValuePercentage = getKnobPercentage(knob); knob.focus();
+                 controlGroup?.classList.add('interacting');
+                 if (!isStepped && valueDisplay) { const currentVal = parseFloat(knob.dataset.actualValue || knob.dataset.value || '0'); updateKnobValueDisplay(knob, currentVal); valueDisplay.style.display = 'inline-block'; }
+                document.body.classList.add('dragging'); document.addEventListener('mousemove', handleKnobMouseMove); document.addEventListener('mouseup', stopDrag); document.addEventListener('mouseleave', stopDrag);
+            });
+            knob.addEventListener('dblclick', async (e) => {
+                 let canInteract = isAudioResumed; if (!canInteract && isAudioInitialized) canInteract = await ensureAudioContextResumed(); if (!isAudioInitialized || !canInteract) return;
+                const defaultValueAttr = knob.getAttribute('data-value'); if (defaultValueAttr !== null) { updateParameterFromKnob(knob, defaultValueAttr); if (!isStepped && valueDisplay) { const defaultVal = parseFloat(defaultValueAttr); updateKnobValueDisplay(knob, defaultVal); } }
+            });
+        });
+    }
+
+
+    // -- General Interaction Listener for Audio Context --
+    function setupGeneralInteractionListener() {
+        drumMachinePanel.addEventListener('pointerdown', async () => {
+            if (!isAudioResumed && isAudioInitialized) {
+                await ensureAudioContextResumed();
+            }
+        }, { capture: true, once: true });
+    }
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', async () => {
+        knobs = drumMachinePanel.querySelectorAll('.knob');
+
+        await initAudio();
+
+        if (isAudioInitialized) {
+            updateAllKnobs(true); // Initialize knobs AND internal params
+            setupKnobListeners();
+            setupGeneralInteractionListener();
+            console.log("JS Drum Synth Ready. Press A, S, D, F to play.");
+            if (audioContext?.state === 'suspended') {
+                console.warn("REMINDER: Click panel or press A/S/D/F to enable audio.");
+            }
+        } else {
+            console.error("Drum Synth initialization failed.");
+        }
+    });
+
+</script>
+</body>
+</html>
