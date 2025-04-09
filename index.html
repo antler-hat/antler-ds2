@@ -27,11 +27,11 @@
             --indicator-on: var(--accent-color);
             --indicator-glow: var(--accent-glow);
         }
-        
+
         html {
             font-size: 10px;
         }
-        
+
         body {
             margin: 0;
             padding-bottom: 50px;
@@ -49,19 +49,18 @@
             letter-spacing: .1em;
         }
         /* Cursor during knob drag */
-        
+
         body.dragging {
             cursor: ns-resize;
         }
-        
+
         h1 {
             font-size: 15px;
             color: var(--grey-light);
-            text-align: center;
             width: 100%;
             letter-spacing: 0.2em;
         }
-        
+
         h2 {
             font-size: 15px;
             margin: 0;
@@ -69,7 +68,7 @@
             text-align: center;
             width: 100%;
         }
-        
+
         .drum-machine-panel {
             display: grid;
             grid-template-columns: repeat(5, auto);
@@ -81,13 +80,13 @@
             margin-bottom: var(--space-lg);
             grid-template-rows: auto 1fr;
         }
-        
+
         .header-area {
             grid-column: 1 / span 5;
             grid-row: 1;
             margin-bottom: var(--space-sm);
         }
-        
+
         .module {
             grid-row: 2;
             padding: var(--space-base);
@@ -100,7 +99,7 @@
             border-radius: 5px;
             position: relative;
         }
-        
+
         .indicator-light {
             position: absolute;
             top: 8px;
@@ -113,19 +112,19 @@
             box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.6);
             transition: background-color 0.05s ease-out, box-shadow 0.05s ease-out;
         }
-        
+
         .indicator-light.active {
             background-color: var(--red-on);
             box-shadow: 0 0 8px var(--red-glow), inset 0 0 3px rgba(255, 200, 200, 0.5);
         }
-        
+
         .control-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: var(--space-base);
             width: 100%;
         }
-        
+
         .adsr-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -133,7 +132,7 @@
             width: 100%;
             grid-column: 1 / span 2;
         }
-        
+
         .control-group {
             display: flex;
             flex-direction: column;
@@ -144,7 +143,7 @@
             justify-content: flex-start;
             position: relative;
         }
-        
+
         label {
             text-transform: uppercase;
             color: var(--grey-light);
@@ -153,12 +152,12 @@
             margin-bottom: 2px;
             font-size: 10px;
         }
-        
+
         .waveform-label {
             font-size: 16px;
             height: auto;
         }
-        
+
         .knob {
             width: 35px;
             height: 35px;
@@ -171,7 +170,7 @@
             box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
             margin-bottom: 2px;
         }
-        
+
         .knob:before {
             content: '';
             position: absolute;
@@ -183,11 +182,11 @@
             transform: translateX(-50%);
             transform-origin: 50% 13.5px;
         }
-        
+
         .knob:focus {
             box-shadow: 0 0 0 2px white;
         }
-        
+
         .knob-value-display {
             color: rgba(255, 255, 255, 0.6);
             font-size: 0.8em;
@@ -203,27 +202,27 @@
             z-index: 10;
             padding: 1px 3px;
         }
-        
+
         .control-group:has(.knob:focus) .knob-value-display,
         .control-group.interacting .knob-value-display {
             display: inline-block;
         }
-        
+
         .control-group:has(.knob[data-steps]:focus) .knob-value-display,
         .control-group.interacting:has(.knob[data-steps]) .knob-value-display {
             display: none;
         }
-        
+
         #effects-master-module {
             grid-template-rows: auto repeat(4, auto);
             gap: var(--space-lg);
             align-items: start;
         }
-        
+
         #effects-master-module h2 {
             grid-column: 1 / span 2;
         }
-        
+
         .effects-control-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -231,33 +230,33 @@
             width: 100%;
             align-items: start;
         }
-        
+
         #voice-module-0 {
             grid-column: 1;
             grid-row: 2;
         }
-        
+
         #voice-module-1 {
             grid-column: 2;
             grid-row: 2;
         }
-        
+
         #voice-module-2 {
             grid-column: 3;
             grid-row: 2;
         }
-        
+
         #voice-module-3 {
             grid-column: 4;
             grid-row: 2;
         }
-        
+
         #effects-master-module {
             grid-column: 5;
             grid-row: 2;
         }
         /* --- Sequencer Styles --- */
-        
+
         .sequencer-panel {
             grid-column: 1 / -1;
             padding: var(--space-lg);
@@ -267,7 +266,7 @@
             align-items: center;
             gap: var(--space-lg);
         }
-        
+
         .sequencer-controls {
             display: flex;
             justify-content: center;
@@ -275,7 +274,7 @@
             gap: var(--space-lg);
             width: 100%;
         }
-        
+
         .seq-button {
             padding: var(--space-sm) var(--space-base);
             font-family: "Space Mono", sans-serif;
@@ -290,38 +289,38 @@
             text-align: center;
             padding: 0;
         }
-        
+
         .seq-button:hover {
             background-color: var(--grey-dark);
         }
-        
+
         .seq-button:active {
             background-color: var(--grey-darker);
             box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.5);
         }
-        
+
         .seq-button.playing {
             background-color: var(--accent-color);
             color: black;
             box-shadow: 0 0 8px var(--accent-glow);
         }
-        
+
         .seq-button.playing:hover {
             background-color: var(--indicator-glow);
         }
-        
+
         .tempo-control {
             display: flex;
             align-items: center;
             gap: var(--space-sm);
         }
-        
+
         .tempo-label {
             font-size: 10px;
             text-transform: uppercase;
             color: var(--grey-light);
         }
-        
+
         .tempo-input {
             font-family: "Space Mono", sans-serif;
             font-size: 14px;
@@ -336,18 +335,18 @@
             /* Remove spinners */
             -moz-appearance: textfield;
         }
-        
+
         .tempo-input::-webkit-inner-spin-button,
         .tempo-input::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
-        
+
         .tempo-input:focus {
             outline: none;
             box-shadow: 0 0 0 2px var(--accent-color);
         }
-        
+
         .sequencer-grid-container {
             display: flex;
             flex-direction: column;
@@ -358,7 +357,7 @@
             overflow-x: auto;
             padding: 5px 0;
         }
-        
+
         .step-indicator-row {
             display: grid;
             grid-template-columns: repeat(16, 1fr);
@@ -370,12 +369,12 @@
             margin: 0 auto;
             margin-bottom: 8px;
         }
-        
+
         .step-indicator {
             display: flex;
             justify-content: center;
         }
-        
+
         .step-indicator:before {
             content: "";
             display: block;
@@ -384,12 +383,12 @@
             width: 10px;
             background-color: var(--red-off);
         }
-        
+
         .step-indicator.active:before {
             background-color: var(--red-on);
             box-shadow: 0 0 8px var(--red-glow), inset 0 0 3px rgba(255, 200, 200, 0.5);
         }
-        
+
         .sequencer-grid {
             display: grid;
             grid-template-columns: repeat(16, 1fr);
@@ -401,7 +400,7 @@
             margin: 0 auto;
             /* Center grid */
         }
-        
+
         .step-button {
             width: 100%;
             aspect-ratio: 1 / 1;
@@ -410,17 +409,17 @@
             border-radius: 3px;
             cursor: pointer;
         }
-        
+
         .step-button:hover {
             background-color: var(--grey-medium);
             border-color: var(--grey-light);
         }
-        
+
         .step-button.active {
             background-color: var(--accent-color);
             box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.4);
         }
-        
+
         .step-button.playing.active {
             background-color: white;
             border-color: white;
@@ -435,7 +434,7 @@
             <h1>AH DS-02</h1>
         </div>
 
-        <!-- Voice Modules (HTML unchanged from previous version) -->
+        <!-- Voice Modules (HTML unchanged) -->
         <!-- Voice 1 (A) -->
         <div class="module voice-module" id="voice-module-0">
             <div class="indicator-light" id="light-0"></div>
@@ -644,30 +643,32 @@
         const sequencerGrid = document.getElementById('sequencer-grid');
         let stepButtons = []; // 2D array [voice][step]
         let stepIndicators = []; // Array of indicator divs
-    
+
         // ----- AUDIO CONTEXT & NODES -----
         let audioContext;
         let masterGain;
-        let effectsInput; // Point where voices connect
+        let effectsInput; // Point where voices connect before FX
+
         // FX Nodes
         let delay, delayFeedbackGain, delayWetGain;
         let reverb, reverbWetGain, reverbLPF;
-        let fxReturnMix; // To combine wet FX signals
-        let preDistMix; // To combine dry + wet FX before distortion
+        let fxReturnMix;    // Collects wet signal from Delay and Reverb
+        let preDistMix;     // Combines dry signal + fxReturnMix before distortion
         let distortionPreGain;
         let distortion;
+
         // Other
         let noiseBuffer;
-    
+
         let isAudioInitialized = false;
         let isAudioResumed = false;
-    
+
         // ----- SYNTH PARAMETERS -----
         const NUM_VOICES = 4;
         const NUM_STEPS = 16;
         const WAVEFORMS = ['sine', 'square', 'sawtooth', 'noise'];
         const WAVEFORM_INDICATORS = ['∿', '⨅', '⩘', '░'];
-    
+
         const params = { // Default parameters (unchanged)
             voices: Array.from({ length: NUM_VOICES }, (_, i) => ({
                 pitch: [60, 180, 800, 3500][i], wave: [0, 3, 3, 3][i], level: [0.8, 0.7, 0.7, 0.6][i], cutoff: [40, 100, 200, 5000][i],
@@ -675,35 +676,35 @@
             })),
             effects: { distortion: { amount: 0 }, delay: { time: 0.15, feedback: 0.4, level: 0 }, reverb: { level: 0 } }, masterVolume: 0.6
         };
-    
+
         let activeSources = Array.from({ length: NUM_VOICES }, () => []);
-    
+
         // ----- KEY MAPPING -----
         const keyToVoiceIndex = { 'KeyA': 0, 'KeyS': 1, 'KeyD': 2, 'KeyF': 3 };
-    
+
         // ----- SEQUENCER STATE -----
         const sequencer = { // (unchanged)
             steps: Array.from({ length: NUM_VOICES }, () => Array(NUM_STEPS).fill(0)), tempo: 120.0, currentStep: 0, isPlaying: false, startTime: 0, nextStepTime: 0, stepDuration: 0, lookahead: 25.0, scheduleAheadTime: 0.1, timerId: null
         };
-    
+
         // ----- SEQUENCER DRAG STATE -----
         let isDraggingSeqStep = false;
         let dragSeqStepMode = null; // 'activate' or 'deactivate'
         let dragSeqStepVoice = -1;
-    
+
         // ----- UTILITY FUNCTIONS -----
         // (createNoiseBuffer, makeDistortionCurve, formatKnobValue, updateKnobValueDisplay - unchanged)
         function createNoiseBuffer(context){const bufferSize=context.sampleRate*2;const buffer=context.createBuffer(1,bufferSize,context.sampleRate);const output=buffer.getChannelData(0);for(let i=0;i<bufferSize;i++){output[i]=Math.random()*2-1;}return buffer;}
         function makeDistortionCurve(amount,context){if(!context)return null;const k=Math.max(0,amount);const n_samples=44100;const curve=new Float32Array(n_samples);const curveSharpness=1+(k/100)*5;for(let i=0;i<n_samples;++i){let x=i*2/n_samples-1;curve[i]=Math.tanh(x*curveSharpness);}return curve;}
-        function formatKnobValue(value,knobId){if(typeof value!=='number'||!isFinite(value))return'---';if(knobId){if(knobId.includes('attack')||knobId.includes('decay')||knobId.includes('release')||knobId.includes('delay-time')){return value<1?(value*1000).toFixed(0)+'ms':value.toFixed(2)+'s';}else if(knobId.includes('pitch')||knobId.includes('cutoff')){return value>=1000?(value/1000).toFixed(1)+'k':value.toFixed(0);}else if(knobId.includes('level')||knobId.includes('feedback')||knobId.includes('sustain')||knobId.includes('volume')){return value.toFixed(2);}else if(knobId.includes('distortion-amount')){return value.toFixed(0);}}return value.toFixed(2);}
+        function formatKnobValue(value,knobId){if(typeof value!=='number'||!isFinite(value))return'---';if(knobId){if(knobId.includes('attack')||knobId.includes('decay')||knobId.includes('release')||knobId.includes('delay-time')){return value<1?(value*1000).toFixed(0)+'ms':value.toFixed(2)+'s';}else if(knobId.includes('pitch')||knobId.includes('cutoff')){return value>=1000?(value/1000).toFixed(1)+'k':value.toFixed(0);}else if(knobId.includes('level')||knobId.includes('feedback')||knobId.includes('sustain')||knobId.includes('volume')||knobId.includes('reverb-level')){return value.toFixed(2);}else if(knobId.includes('distortion-amount')){return value.toFixed(0);}}return value.toFixed(2);}
         function updateKnobValueDisplay(knob,value){if(knob&&!knob.dataset.steps){const displayId=knob.id+'-value';const displayElement=document.getElementById(displayId);if(displayElement){displayElement.textContent=formatKnobValue(value,knob.id);}}}
-    
+
         // ----- AUDIO CONTEXT & INITIALIZATION -----
         async function ensureAudioContextResumed() { // (unchanged)
             if (!audioContext) return false; if (audioContext.state === 'running') { if (!isAudioResumed) { isAudioResumed = true; masterGain.gain.linearRampToValueAtTime(params.masterVolume, audioContext.currentTime + 0.05); } return true; } if (audioContext.state === 'suspended') { try { await audioContext.resume(); if (audioContext.state === 'running') { console.log("AudioContext Resumed."); isAudioResumed = true; masterGain.gain.linearRampToValueAtTime(params.masterVolume, audioContext.currentTime + 0.05); return true; } else { isAudioResumed = false; return false; } } catch (e) { console.error("Error resuming:", e); isAudioResumed = false; return false; } } return false;
         }
-    
-        // --- MODIFIED initAudio ---
+
+        // --- REVISED initAudio ---
         async function initAudio() {
             if (isAudioInitialized) return;
             console.log("Initializing AudioContext...");
@@ -712,117 +713,131 @@
                 if (!audioContext) throw new Error("Web Audio API not supported.");
                 isAudioInitialized = true;
                 console.log("Initial State:", audioContext.state);
-    
+
                 // Core Nodes
                 masterGain = audioContext.createGain();
-                masterGain.gain.value = 0;
+                masterGain.gain.value = 0; // Start muted until resumed
                 effectsInput = audioContext.createGain(); // Voices connect here
-    
+
                 // Create all FX nodes first
-                delay = audioContext.createDelay(2.0);
+                delay = audioContext.createDelay(2.0); // Max delay time
                 delayFeedbackGain = audioContext.createGain();
-                delayWetGain = audioContext.createGain();
-    
+                delayWetGain = audioContext.createGain(); // Controlled by Delay Level knob
+
                 reverb = audioContext.createConvolver();
-                reverbWetGain = audioContext.createGain();
-                reverbLPF = audioContext.createBiquadFilter();
-    
-                fxReturnMix = audioContext.createGain(); // Node to combine wet signals
-                preDistMix = audioContext.createGain(); // Node to combine dry + wet FX return
-    
-                distortionPreGain = audioContext.createGain();
-                distortion = audioContext.createWaveShaper();
-    
+                reverbWetGain = audioContext.createGain(); // Controlled by Reverb Level knob
+                reverbLPF = audioContext.createBiquadFilter(); // Filter reverb output
+
+                fxReturnMix = audioContext.createGain(); // Collects final wet signals from Delay & Reverb
+                preDistMix = audioContext.createGain(); // Combines dry signal + fxReturnMix
+
+                distortionPreGain = audioContext.createGain(); // Gain before distortion stage
+                distortion = audioContext.createWaveShaper(); // Distortion effect
+
                 // Noise Buffer
                 noiseBuffer = createNoiseBuffer(audioContext);
-    
-                // --- Create MONO Reverb Impulse ---
+
+                // Create MONO Reverb Impulse
                  const reverbTime = 2, decay = 4.0, sampleRate = audioContext.sampleRate;
                  const length = sampleRate * reverbTime;
-                 const impulse = audioContext.createBuffer(1, length, sampleRate);
-                 const impulseL = impulse.getChannelData(0);
+                 const impulse = audioContext.createBuffer(1, length, sampleRate); // Mono impulse
+                 const impulseData = impulse.getChannelData(0);
                  for (let i = 0; i < length; i++) {
                       const envelope = Math.pow(1 - i / length, decay);
-                      impulseL[i] = (Math.random() * 2 - 1) * envelope;
+                      impulseData[i] = (Math.random() * 2 - 1) * envelope;
                  }
                  reverb.buffer = impulse;
-                // --- End Reverb Impulse ---
-    
-                // --- Configure Reverb Filter ---
+
+                // Configure Reverb Filter (optional, makes reverb darker)
                 reverbLPF.type = 'lowpass';
-                reverbLPF.frequency.value = 1300; // Darker setting
+                reverbLPF.frequency.value = 1300; // Adjust frequency as desired
                 reverbLPF.Q.value = 1;
-                // --- End Reverb Filter Config ---
-    
-                // --- Connect Audio Graph (Revised Routing) ---
-    
-                // 1. Effects Input -> Sends (Delay, Reverb) AND Pre-Dist Mix (Dry)
+
+                // --- Connect Audio Graph (REVISED for correct routing) ---
+
+                // 1. Dry Path: Voice Output -> Pre-Distortion Mix
+                effectsInput.connect(preDistMix);
+
+                // 2. Send to Delay: Voice Output -> Delay Input
                 effectsInput.connect(delay);
-                effectsInput.connect(reverb);
-                effectsInput.connect(preDistMix); // Dry signal path
-    
-                // 2. Delay Path
+
+                // 3. Delay Chain: Feedback Loop
                 delay.connect(delayFeedbackGain);
-                delayFeedbackGain.connect(delay); // Feedback loop
-                delay.connect(delayWetGain);      // Delay output to its wet gain control
-    
-                // 3. Reverb Path
-                reverb.connect(reverbWetGain);      // Convolver output to its wet gain control
-                reverbWetGain.connect(reverbLPF);   // Wet gain -> LPF
-    
-                // 4. Combine Wet Signals
-                delayWetGain.connect(fxReturnMix);  // Delay wet -> FX Return Mixer
-                reverbLPF.connect(fxReturnMix);     // Filtered Reverb wet -> FX Return Mixer
-    
-                // 5. Combine Dry + Wet FX Return
-                fxReturnMix.connect(preDistMix);    // Wet FX Mix -> Pre-Distortion Mixer
-    
-                // 6. Pre-Distortion Mix -> Distortion Stage
+                delayFeedbackGain.connect(delay);
+
+                // 4. Wet Delay Path:
+                //    a) Delay Output -> Delay Wet Gain (controlled by knob)
+                delay.connect(delayWetGain);
+                //    b) Wet Delay -> FX Return Mix (to be mixed with dry)
+                delayWetGain.connect(fxReturnMix);
+                //    c) Wet Delay -> Reverb Input (Delay repeats feed reverb)
+                delayWetGain.connect(reverb);
+
+                // 5. Send to Reverb (Direct): Voice Output -> Reverb Input
+                effectsInput.connect(reverb);
+
+                // 6. Reverb Chain:
+                //    a) Reverb Output -> LPF (optional filter)
+                reverb.connect(reverbLPF);
+                //    b) Filtered Reverb -> Reverb Wet Gain (controlled by knob)
+                reverbLPF.connect(reverbWetGain);
+                //    c) Wet Reverb -> FX Return Mix
+                reverbWetGain.connect(fxReturnMix);
+
+                // 7. Combine Dry + Wet FX:
+                //    a) FX Return (Wet Delay + Wet Reverb) -> Pre-Distortion Mix
+                fxReturnMix.connect(preDistMix);
+
+                // 8. Distortion Stage:
+                //    a) Combined Signal -> Distortion Pre Gain
                 preDistMix.connect(distortionPreGain);
+                //    b) Pre Gain -> Distortion Curve
                 distortionPreGain.connect(distortion);
-    
-                // 7. Distortion -> Master Output
+
+                // 9. Master Output:
+                //    a) Distortion -> Master Gain (Volume)
                 distortion.connect(masterGain);
-    
-                // 8. Master -> Destination
+                //    b) Master Gain -> Destination
                 masterGain.connect(audioContext.destination);
+
                 // --- End Audio Graph Connections ---
-    
-    
-                // Set initial FX params
+
+
+                // Set initial FX params using the update function
                 updateParameterValue('effects.distortion.amount', params.effects.distortion.amount, true);
                 updateParameterValue('effects.delay.time', params.effects.delay.time, true);
                 updateParameterValue('effects.delay.feedback', params.effects.delay.feedback, true);
-                updateParameterValue('effects.delay.level', params.effects.delay.level, true);
-                updateParameterValue('effects.reverb.level', params.effects.reverb.level, true); // Will apply multiplier
+                updateParameterValue('effects.delay.level', params.effects.delay.level, true); // Controls delayWetGain
+                updateParameterValue('effects.reverb.level', params.effects.reverb.level, true); // Controls reverbWetGain
                 updateParameterValue('masterVolume', params.masterVolume, true);
-    
+
+                // Check initial state and set volume if running
                 if (audioContext.state === 'running') {
                     isAudioResumed = true;
-                    masterGain.gain.value = params.masterVolume;
+                    masterGain.gain.value = params.masterVolume; // Set initial volume directly if already running
                 } else {
                     isAudioResumed = false;
-                    console.log("Context suspended.");
+                    console.log("Context suspended. Interaction needed to start audio.");
                 }
-    
+
             } catch (e) {
                 console.error("Audio Init Error:", e);
                 isAudioInitialized = false; isAudioResumed = false;
                 alert("Audio Init Error: " + e.message);
             }
         }
-        // --- END MODIFIED initAudio ---
-    
+        // --- END REVISED initAudio ---
+
         // ----- DRUM VOICE TRIGGERING -----
         // (triggerDrumSound - unchanged)
-        function triggerDrumSound(voiceIndex, playTime = audioContext.currentTime) { if (!isAudioInitialized || !audioContext) return; const voiceParams = params.voices[voiceIndex]; const waveType = WAVEFORMS[voiceParams.wave]; const now = playTime; const env = voiceParams.env; const voiceLevel = voiceParams.level; const voiceCutoff = voiceParams.cutoff; let sourceNode; const sourceGain = audioContext.createGain(); const levelGain = audioContext.createGain(); const filterNode = audioContext.createBiquadFilter(); const envelopeGain = audioContext.createGain(); filterNode.type = 'highpass'; filterNode.frequency.setValueAtTime(voiceCutoff, now); filterNode.Q.setValueAtTime(1, now); levelGain.gain.setValueAtTime(voiceLevel, now); const nodesToStore = { levelGain: levelGain, filterNode: filterNode, envGain: envelopeGain }; if (waveType === 'noise') { sourceNode = audioContext.createBufferSource(); sourceNode.buffer = noiseBuffer; sourceNode.loop = false; nodesToStore.noise = sourceNode; } else { sourceNode = audioContext.createOscillator(); sourceNode.type = waveType; sourceNode.frequency.setValueAtTime(voiceParams.pitch, now); nodesToStore.osc = sourceNode; } activeSources[voiceIndex].push(nodesToStore); sourceNode.connect(sourceGain); sourceGain.connect(levelGain); levelGain.connect(filterNode); filterNode.connect(envelopeGain); envelopeGain.connect(effectsInput); sourceGain.gain.value = 1; const peakLevel = 1.0; const sustainLevel = Math.max(0.0001, env.sustain * peakLevel); const attackTime = Math.max(0.001, env.attack); const decayTime = Math.max(0.001, env.decay); const releaseTime = Math.max(0.001, env.release); const totalDuration = attackTime + decayTime + releaseTime; envelopeGain.gain.cancelScheduledValues(now); envelopeGain.gain.setValueAtTime(0, now); envelopeGain.gain.linearRampToValueAtTime(peakLevel, now + attackTime); envelopeGain.gain.linearRampToValueAtTime(sustainLevel, now + attackTime + decayTime); envelopeGain.gain.setValueAtTime(sustainLevel, now + attackTime + decayTime); envelopeGain.gain.linearRampToValueAtTime(0.00001, now + totalDuration); sourceNode.start(now); try { if (sourceNode instanceof AudioBufferSourceNode || sourceNode instanceof OscillatorNode) { sourceNode.stop(now + totalDuration + 0.05); } } catch (e) { /* Ignore */ } }
-    
-    
+        function triggerDrumSound(voiceIndex, playTime = audioContext.currentTime) { if (!isAudioInitialized || !audioContext) return; const voiceParams = params.voices[voiceIndex]; const waveType = WAVEFORMS[voiceParams.wave]; const now = playTime; const env = voiceParams.env; const voiceLevel = voiceParams.level; const voiceCutoff = voiceParams.cutoff; let sourceNode; const sourceGain = audioContext.createGain(); const levelGain = audioContext.createGain(); const filterNode = audioContext.createBiquadFilter(); const envelopeGain = audioContext.createGain(); filterNode.type = 'highpass'; filterNode.frequency.setValueAtTime(voiceCutoff, now); filterNode.Q.setValueAtTime(1, now); levelGain.gain.setValueAtTime(voiceLevel, now); const nodesToStore = { levelGain: levelGain, filterNode: filterNode, envGain: envelopeGain }; if (waveType === 'noise') { sourceNode = audioContext.createBufferSource(); sourceNode.buffer = noiseBuffer; sourceNode.loop = false; nodesToStore.noise = sourceNode; } else { sourceNode = audioContext.createOscillator(); sourceNode.type = waveType; sourceNode.frequency.setValueAtTime(voiceParams.pitch, now); nodesToStore.osc = sourceNode; } activeSources[voiceIndex].push(nodesToStore); sourceNode.connect(sourceGain); sourceGain.connect(levelGain); levelGain.connect(filterNode); filterNode.connect(envelopeGain); envelopeGain.connect(effectsInput); /* <<< CONNECT TO effectsInput */ sourceGain.gain.value = 1; const peakLevel = 1.0; const sustainLevel = Math.max(0.0001, env.sustain * peakLevel); const attackTime = Math.max(0.001, env.attack); const decayTime = Math.max(0.001, env.decay); const releaseTime = Math.max(0.001, env.release); const totalDuration = attackTime + decayTime + releaseTime; envelopeGain.gain.cancelScheduledValues(now); envelopeGain.gain.setValueAtTime(0, now); envelopeGain.gain.linearRampToValueAtTime(peakLevel, now + attackTime); envelopeGain.gain.linearRampToValueAtTime(sustainLevel, now + attackTime + decayTime); envelopeGain.gain.setValueAtTime(sustainLevel, now + attackTime + decayTime); envelopeGain.gain.linearRampToValueAtTime(0.00001, now + totalDuration); sourceNode.start(now); try { if (sourceNode instanceof AudioBufferSourceNode || sourceNode instanceof OscillatorNode) { sourceNode.stop(now + totalDuration + 0.05); } } catch (e) { /* Ignore */ } }
+
+
         // ----- UI UPDATE FUNCTIONS -----
         // (updateKnobVisual - unchanged)
         function updateKnobVisual(knob, valueForRotation, actualAudioValue) { knob.dataset.actualValue = typeof actualAudioValue === 'number' ? actualAudioValue.toFixed(5) : String(actualAudioValue); const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null; let percentage = Math.max(0, Math.min(1, valueForRotation)); if (steps) { const numSteps = steps.length; const stepIndex = numSteps > 1 ? Math.round(percentage * (numSteps - 1)) : 0; if (knob.id.includes('-wave')) { const voiceIndex = parseInt(knob.id.match(/v(\d+)-/)[1]); if (waveformIndicators[voiceIndex]) { waveformIndicators[voiceIndex].textContent = WAVEFORM_INDICATORS[stepIndex] || '?'; } } } else { updateKnobValueDisplay(knob, actualAudioValue); } const rotation = -135 + (percentage * 270); knob.style.transform = `rotate(${rotation}deg)`; }
-    
-        // --- MODIFIED updateParameterValue ---
+
+        // --- REVISED updateParameterValue (Removed reverb boost) ---
         function updateParameterValue(paramPath, value, forceUpdate = false) {
             const parts = paramPath.split('.');
             let currentParamObj = params;
@@ -831,16 +846,16 @@
                 const finalKey = parts[parts.length - 1]; if (typeof value === 'string' && !isNaN(parseFloat(value))) { value = parseFloat(value); }
                 currentParamObj[finalKey] = value;
             } catch (e) { console.error("Error updating internal params:", paramPath, value, e); return; }
-    
+
             // Update Web Audio Node
             if (isAudioInitialized && (isAudioResumed || forceUpdate) && audioContext) {
                 const now = audioContext.currentTime;
-                const rampTime = 0.01;
+                const rampTime = 0.01; // Short ramp to avoid clicks
                 try {
                     if (paramPath === 'masterVolume' && masterGain) {
                         masterGain.gain.setTargetAtTime(value, now, rampTime);
                     } else if (paramPath === 'effects.distortion.amount' && distortion && distortionPreGain) {
-                        const preGainValue = 1 + (value / 100) * 4; // Mild distortion max pre-gain
+                        const preGainValue = 1 + (value / 100) * 4; // Increase gain slightly before distortion for more effect
                         distortionPreGain.gain.setTargetAtTime(preGainValue, now, rampTime);
                         distortion.curve = makeDistortionCurve(value, audioContext);
                         distortion.oversample = value > 15 ? '4x' : (value > 5 ? '2x' : 'none');
@@ -849,22 +864,24 @@
                     } else if (paramPath === 'effects.delay.feedback' && delayFeedbackGain) {
                         delayFeedbackGain.gain.setTargetAtTime(value, now, rampTime);
                     } else if (paramPath === 'effects.delay.level' && delayWetGain) {
-                        // 'value' is 0-1 from knob
+                        // Delay Level controls the gain of the delayWetGain node
                         delayWetGain.gain.setTargetAtTime(value, now, rampTime);
                     } else if (paramPath === 'effects.reverb.level' && reverbWetGain) {
-                        // Reverb volume. High number set here
-                        const reverbGainValue = value * 8;
-                        reverbWetGain.gain.setTargetAtTime(reverbGainValue, now, rampTime);
+                        // Reverb Level controls the gain of the reverbWetGain node
+                        // Removed the multiplier boost from the previous version.
+                        reverbWetGain.gain.setTargetAtTime(value, now, rampTime);
                     }
+                    // Voice parameter updates (e.g., pitch, filter) could be handled here if needed for real-time changes on existing notes,
+                    // but the current triggerDrumSound creates new nodes each time, so it's not strictly necessary.
                 } catch (e) { console.error(`Error setting AudioNode param ${paramPath}:`, e, "Value:", value); }
             }
         }
-        // --- END MODIFIED ---
-    
+        // --- END REVISED ---
+
         // (updateParameterFromKnob, updateAllKnobs - unchanged)
         function updateParameterFromKnob(knob, newValue, forceUpdate = false) { const paramPath = knob.dataset.param; const min = parseFloat(knob.dataset.min); const max = parseFloat(knob.dataset.max); const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null; const isLog = knob.dataset.curve === 'log'; let uiValue = newValue; let actualAudioValue; let percentageForVisual = 0.5; if (steps) { const stepIndex = Math.max(0, Math.min(steps.length - 1, Math.round(parseFloat(newValue)))); uiValue = stepIndex; actualAudioValue = stepIndex; knob.dataset.value = uiValue; percentageForVisual = steps.length > 1 ? stepIndex / (steps.length - 1) : 0.5; } else { const numericValue = parseFloat(newValue); uiValue = Math.max(min, Math.min(max, numericValue)); actualAudioValue = uiValue; knob.dataset.value = uiValue.toFixed(5); if (isLog && min > 0) { if (uiValue <= min) percentageForVisual = 0; else if (uiValue >= max) percentageForVisual = 1; else percentageForVisual = Math.log(uiValue / min) / Math.log(max / min); } else { const range = max - min; percentageForVisual = range > 0 ? (actualAudioValue - min) / range : 0.5; } } percentageForVisual = Math.max(0, Math.min(1, isNaN(percentageForVisual) ? 0.5 : percentageForVisual)); updateKnobVisual(knob, percentageForVisual, actualAudioValue); updateParameterValue(paramPath, actualAudioValue, forceUpdate); }
         function updateAllKnobs(forceUpdate = false) { if (!knobs) knobs = drumMachinePanel.querySelectorAll('.knob'); knobs.forEach(knob => { const initialValueAttr = knob.getAttribute('data-value'); const currentDatasetValue = knob.dataset.value; let valueToUse = (forceUpdate || currentDatasetValue === undefined || currentDatasetValue === null) ? initialValueAttr : currentDatasetValue; if (valueToUse !== null) { updateParameterFromKnob(knob, valueToUse, forceUpdate); } else { console.warn("Knob missing value:", knob.id); } if (!knob.dataset.steps) { const displayId = knob.id + '-value'; const displayElement = document.getElementById(displayId); if (displayElement && document.activeElement !== knob) { displayElement.style.display = 'none'; } } }); }
-    
+
         // ----- SEQUENCER LOGIC -----
         // (scheduleNotes, sequencerScheduler, playSequencer, stopSequencer, togglePlayStop, updateTempo, resetSequencer - unchanged)
         function scheduleNotes(currentStep,currentTime){sequencer.stepDuration=60.0/sequencer.tempo/4.0;while(sequencer.nextStepTime<currentTime+sequencer.scheduleAheadTime){const stepIndex=sequencer.currentStep;const stepTime=sequencer.nextStepTime;for(let voiceIndex=0;voiceIndex<NUM_VOICES;voiceIndex++){if(sequencer.steps[voiceIndex][stepIndex]===1){triggerDrumSound(voiceIndex,stepTime);}}updateStepIndicator(stepIndex);sequencer.nextStepTime+=sequencer.stepDuration;sequencer.currentStep=(sequencer.currentStep+1)%NUM_STEPS;}}
@@ -874,18 +891,18 @@
         function togglePlayStop(){if(sequencer.isPlaying){stopSequencer();}else{playSequencer();}}
         function updateTempo(newTempo){const clampedTempo=Math.max(30,Math.min(300,newTempo));sequencer.tempo=clampedTempo;tempoInput.value=clampedTempo;}
         function resetSequencer(){stopSequencer();for(let v=0;v<NUM_VOICES;v++){for(let s=0;s<NUM_STEPS;s++){sequencer.steps[v][s]=0;stepButtons[v][s].classList.remove('active');}}sequencer.currentStep=0;clearStepIndicators();console.log("Sequencer Reset.");}
-    
+
         // --- Step State Management (unchanged) ---
         function getStepState(voiceIndex, stepIndex) { return sequencer.steps[voiceIndex][stepIndex] === 1; }
         function setStepState(voiceIndex, stepIndex, isActive) { const newState = isActive ? 1 : 0; if (sequencer.steps[voiceIndex][stepIndex] !== newState) { sequencer.steps[voiceIndex][stepIndex] = newState; stepButtons[voiceIndex][stepIndex].classList.toggle('active', isActive); } }
-    
+
         // --- Sequencer Visuals ---
         // (createSequencerGridUI, lastIndicatorUpdate, updateStepIndicator, clearStepIndicators - unchanged)
         function createSequencerGridUI() { stepIndicatorRow.innerHTML = ''; stepIndicators = []; for (let i = 0; i < NUM_STEPS; i++) { const indicator = document.createElement('div'); indicator.classList.add('step-indicator'); indicator.id = `step-indicator-${i}`; stepIndicatorRow.appendChild(indicator); stepIndicators.push(indicator); } sequencerGrid.innerHTML = ''; stepButtons = []; for (let v = 0; v < NUM_VOICES; v++) { stepButtons[v] = []; for (let s = 0; s < NUM_STEPS; s++) { const button = document.createElement('button'); button.classList.add('step-button'); button.dataset.voice = v; button.dataset.step = s; sequencerGrid.appendChild(button); stepButtons[v].push(button); } } }
         let lastIndicatorUpdate = { step: -1, timeoutId: null };
         function updateStepIndicator(stepIndex) { if (lastIndicatorUpdate.timeoutId) { clearTimeout(lastIndicatorUpdate.timeoutId); if(lastIndicatorUpdate.step >= 0 && lastIndicatorUpdate.step < NUM_STEPS) { stepIndicators[lastIndicatorUpdate.step]?.classList.remove('active'); for(let v = 0; v < NUM_VOICES; v++){ stepButtons[v][lastIndicatorUpdate.step]?.classList.remove('playing'); } } } if(stepIndex >= 0 && stepIndex < NUM_STEPS) { stepIndicators[stepIndex]?.classList.add('active'); for(let v = 0; v < NUM_VOICES; v++){ stepButtons[v][stepIndex]?.classList.add('playing'); } } const indicatorOffDelay = (sequencer.stepDuration * 1000) * 0.8; lastIndicatorUpdate.step = stepIndex; lastIndicatorUpdate.timeoutId = setTimeout(() => { if(stepIndex >= 0 && stepIndex < NUM_STEPS) { stepIndicators[stepIndex]?.classList.remove('active'); for(let v = 0; v < NUM_VOICES; v++){ stepButtons[v][stepIndex]?.classList.remove('playing'); } } lastIndicatorUpdate.timeoutId = null; }, indicatorOffDelay); }
         function clearStepIndicators(){if(lastIndicatorUpdate.timeoutId){clearTimeout(lastIndicatorUpdate.timeoutId);lastIndicatorUpdate.timeoutId=null;}stepIndicators.forEach(ind=>ind.classList.remove('active'));stepButtons.flat().forEach(btn=>btn.classList.remove('playing'));lastIndicatorUpdate.step=-1;}
-    
+
         // ----- EVENT LISTENERS -----
         // (Keyboard listener - unchanged)
         document.addEventListener('keydown', async (e) => { if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return; if (e.code === 'Space') { e.preventDefault(); togglePlayStop(); return; } const voiceIndex = keyToVoiceIndex[e.code]; if (voiceIndex !== undefined) { e.preventDefault(); let canPlay = isAudioResumed; if (!canPlay && isAudioInitialized) canPlay = await ensureAudioContextResumed(); if (canPlay) { triggerDrumSound(voiceIndex, audioContext.currentTime); const light = indicatorLights[voiceIndex]; if (light) { light.classList.add('active'); setTimeout(() => light.classList.remove('active'), 100); } } else { console.warn("Audio context not running for manual trigger."); } return; } if (document.activeElement && document.activeElement.classList.contains('knob')) { const focusedKnob = document.activeElement; if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); handleKnobArrowKey(focusedKnob, e.key === 'ArrowLeft' ? -1 : 1, e.shiftKey); } else if (e.key >= '0' && e.key <= '9') { e.preventDefault(); handleKnobNumberKey(focusedKnob, parseInt(e.key, 10)); } } });
@@ -896,21 +913,21 @@
         // (Mouse Input for Knobs - unchanged)
         let isDragging=false;let dragKnob=null;let startY=0;let startValuePercentage=0; function handleKnobMouseMove(e){if(!isDragging||!dragKnob)return;e.preventDefault();const currentY=e.clientY;const deltaY=startY-currentY;const steps=dragKnob.dataset.steps?dragKnob.dataset.steps.split(','):null;const min=parseFloat(dragKnob.dataset.min);const max=parseFloat(dragKnob.dataset.max);const isLog=dragKnob.dataset.curve==='log'&&min>0;let newValue;if(steps){const pixelsPerStep=20;const totalSteps=steps.length;if(totalSteps<=1)return;const totalDragPixelsForRange=pixelsPerStep*(totalSteps-1);const percentageChange=totalDragPixelsForRange>0?(deltaY/totalDragPixelsForRange):0;let newPercentage=Math.max(0,Math.min(1,startValuePercentage+percentageChange));newValue=Math.round(newPercentage*(totalSteps-1));}else{const dragRangePixels=150;const deltaPercentage=deltaY/dragRangePixels;let newPercentage=Math.max(0,Math.min(1,startValuePercentage+deltaPercentage));if(isLog){const epsilon=1e-9;const clampedPercentage=Math.max(epsilon,Math.min(1-epsilon,newPercentage));if(min>0&&max>min)newValue=min*Math.pow(max/min,clampedPercentage);else newValue=(newPercentage>0.5)?max:min;}else{const range=max-min;newValue=min+newPercentage*range;}newValue=Math.max(min,Math.min(max,newValue));}let currentValueInDataStr=dragKnob.dataset.value;const tolerance=1e-6;if(steps){if(newValue!==parseInt(currentValueInDataStr)){updateParameterFromKnob(dragKnob,newValue);}}else{if(Math.abs(newValue-parseFloat(currentValueInDataStr))>tolerance){updateParameterFromKnob(dragKnob,newValue);}}}
         function stopDrag(){if(isDragging&&dragKnob){dragKnob.closest('.control-group')?.classList.remove('interacting');}if(isDragging){isDragging=false;dragKnob=null;document.body.classList.remove('dragging');document.removeEventListener('mousemove',handleKnobMouseMove);document.removeEventListener('mouseup',stopDrag);document.removeEventListener('mouseleave',stopDrag);}} function setupKnobListeners(){if(!knobs)knobs=drumMachinePanel.querySelectorAll('.knob');knobs.forEach(knob=>{const controlGroup=knob.closest('.control-group');const isStepped=knob.hasAttribute('data-steps');const valueDisplayId=knob.id+'-value';const valueDisplay=document.getElementById(valueDisplayId);if(!isStepped&&valueDisplay){knob.addEventListener('focus',()=>{const currentVal=parseFloat(knob.dataset.actualValue||knob.dataset.value||'0');updateKnobValueDisplay(knob,currentVal);valueDisplay.style.display='inline-block';});knob.addEventListener('blur',()=>{if(!isDragging||dragKnob!==knob){valueDisplay.style.display='none';}controlGroup?.classList.remove('interacting');});}knob.addEventListener('mousedown',async(e)=>{let canInteract=isAudioResumed;if(!canInteract&&isAudioInitialized)canInteract=await ensureAudioContextResumed();if(!isAudioInitialized||!canInteract)return;e.preventDefault();isDragging=true;dragKnob=knob;startY=e.clientY;startValuePercentage=getKnobPercentage(knob);knob.focus();controlGroup?.classList.add('interacting');if(!isStepped&&valueDisplay){const currentVal=parseFloat(knob.dataset.actualValue||knob.dataset.value||'0');updateKnobValueDisplay(knob,currentVal);valueDisplay.style.display='inline-block';}document.body.classList.add('dragging');document.addEventListener('mousemove',handleKnobMouseMove);document.addEventListener('mouseup',stopDrag);document.addEventListener('mouseleave',stopDrag);});knob.addEventListener('dblclick',async(e)=>{let canInteract=isAudioResumed;if(!canInteract&&isAudioInitialized)canInteract=await ensureAudioContextResumed();if(!isAudioInitialized||!canInteract)return;const defaultValueAttr=knob.getAttribute('data-value');if(defaultValueAttr!==null){updateParameterFromKnob(knob,defaultValueAttr);if(!isStepped&&valueDisplay){const defaultVal=parseFloat(defaultValueAttr);updateKnobValueDisplay(knob,defaultVal);}}});});}
-    
+
         // --- Sequencer UI Event Listeners (unchanged) ---
         function handleSeqGridMouseDown(e) { if (!e.target.classList.contains('step-button')) return; e.preventDefault(); isDraggingSeqStep = true; const button = e.target; const voiceIndex = parseInt(button.dataset.voice); const stepIndex = parseInt(button.dataset.step); const initialState = getStepState(voiceIndex, stepIndex); const newState = !initialState; setStepState(voiceIndex, stepIndex, newState); dragSeqStepMode = newState ? 'activate' : 'deactivate'; dragSeqStepVoice = voiceIndex; document.addEventListener('mousemove', handleSeqGridMouseMove); document.addEventListener('mouseup', handleSeqGridMouseUp, { once: true }); }
         function handleSeqGridMouseMove(e) { if (!isDraggingSeqStep) return; const targetElement = document.elementFromPoint(e.clientX, e.clientY); if (!targetElement || !targetElement.classList.contains('step-button')) { return; } const button = targetElement; const voiceIndex = parseInt(button.dataset.voice); const stepIndex = parseInt(button.dataset.step); if (voiceIndex === dragSeqStepVoice) { const currentState = getStepState(voiceIndex, stepIndex); const shouldActivate = dragSeqStepMode === 'activate'; if (shouldActivate && !currentState) { setStepState(voiceIndex, stepIndex, true); } else if (!shouldActivate && currentState) { setStepState(voiceIndex, stepIndex, false); } } }
         function handleSeqGridMouseUp(e) { if (isDraggingSeqStep) { isDraggingSeqStep = false; dragSeqStepMode = null; dragSeqStepVoice = -1; document.removeEventListener('mousemove', handleSeqGridMouseMove); } }
         function setupSequencerListeners() { playStopButton.addEventListener('click', togglePlayStop); resetButton.addEventListener('click', resetSequencer); tempoInput.addEventListener('change', (e) => { const newTempo = parseFloat(e.target.value); if (!isNaN(newTempo)) { updateTempo(newTempo); } else { tempoInput.value = sequencer.tempo; } }); tempoInput.addEventListener('input', (e) => { const currentVal = parseFloat(e.target.value); if (!isNaN(currentVal)) { sequencer.tempo = Math.max(30, Math.min(300, currentVal)); } }); sequencerGrid.addEventListener('mousedown', handleSeqGridMouseDown); }
-    
+
         // -- General Interaction Listener for Audio Context -- (unchanged)
         function setupGeneralInteractionListener(){drumMachinePanel.addEventListener('pointerdown',async()=>{if(!isAudioResumed&&isAudioInitialized){await ensureAudioContextResumed();}},{capture:true,once:true}); sequencerPanel.addEventListener('pointerdown',async()=>{if(!isAudioResumed&&isAudioInitialized){await ensureAudioContextResumed();}},{capture:true,once:true});}
-    
+
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', async () => { // (unchanged)
             knobs = drumMachinePanel.querySelectorAll('.knob'); createSequencerGridUI(); await initAudio(); if (isAudioInitialized) { updateAllKnobs(true); setupKnobListeners(); setupSequencerListeners(); setupGeneralInteractionListener(); console.log("JS Drum Synth Ready. Press A/S/D/F to play manually, Spacebar for sequencer."); if (audioContext?.state === 'suspended') { console.warn("REMINDER: Click panel or press key/space to enable audio."); } } else { console.error("Drum Synth initialization failed."); }
         });
-    
+
     </script>
 </body>
 
