@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
     </style>
     <style>
-        :root {
+         :root {
             --space-base: 15px;
             --space-sm: 10px;
             --space-lg: 20px;
@@ -26,19 +27,23 @@
             --indicator-on: var(--accent-color);
             --indicator-glow: var(--accent-glow);
         }
-
+        
         html {
             font-size: 10px;
         }
+        
         body {
             margin: 0;
-            padding-bottom: 50px; /* Add padding for sequencer */
+            padding-bottom: 50px;
+            /* Add padding for sequencer */
             background-color: black;
             color: white;
             font-family: "Space Mono", sans-serif;
             display: flex;
-            flex-direction: column; /* Stack synth and sequencer */
-            align-items: center; /* Center content */
+            flex-direction: column;
+            /* Stack synth and sequencer */
+            align-items: center;
+            /* Center content */
             min-height: 100vh;
             user-select: none;
             -webkit-user-select: none;
@@ -46,10 +51,12 @@
             font-size: 12px;
             letter-spacing: .1em;
         }
+        
         body.dragging {
-            cursor: ns-resize; /* Cursor during knob drag */
+            cursor: ns-resize;
+            /* Cursor during knob drag */
         }
-
+        
         h1 {
             font-size: 15px;
             color: var(--grey-light);
@@ -57,15 +64,15 @@
             width: 100%;
             letter-spacing: 0.2em;
         }
-         h2 {
+        
+        h2 {
             font-size: 15px;
             margin: 0;
             color: var(--grey-light);
             text-align: center;
             width: 100%;
-         }
-
-
+        }
+        
         .drum-machine-panel {
             display: grid;
             grid-template-columns: repeat(5, auto);
@@ -74,19 +81,22 @@
             width: max-content;
             border-radius: 8px;
             margin-top: 20px;
-            margin-bottom: var(--space-lg); /* Space before sequencer */
+            margin-bottom: var(--space-lg);
+            /* Space before sequencer */
             /* Add grid row definition for header */
             grid-template-rows: auto 1fr;
         }
-
+        
         .header-area {
-             grid-column: 1 / span 5;
-             grid-row: 1; /* Explicitly place header in first row */
-             margin-bottom: var(--space-sm);
+            grid-column: 1 / span 5;
+            grid-row: 1;
+            /* Explicitly place header in first row */
+            margin-bottom: var(--space-sm);
         }
-
+        
         .module {
-            grid-row: 2; /* Modules go in the second row */
+            grid-row: 2;
+            /* Modules go in the second row */
             padding: var(--space-base);
             display: flex;
             flex-direction: column;
@@ -97,7 +107,7 @@
             border-radius: 5px;
             position: relative;
         }
-
+        
         .indicator-light {
             position: absolute;
             top: 8px;
@@ -107,29 +117,30 @@
             background-color: var(--red-off);
             border-radius: 50%;
             border: 1px solid #222;
-            box-shadow: inset 0 0 3px rgba(0,0,0,0.6);
+            box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.6);
             transition: background-color 0.05s ease-out, box-shadow 0.05s ease-out;
         }
-
+        
         .indicator-light.active {
             background-color: var(--red-on);
             box-shadow: 0 0 8px var(--red-glow), inset 0 0 3px rgba(255, 200, 200, 0.5);
         }
-
+        
         .control-grid {
-             display: grid;
-             grid-template-columns: 1fr 1fr;
-             gap: var(--space-base);
-             width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-base);
+            width: 100%;
         }
-         .adsr-grid {
-             display: grid;
-             grid-template-columns: repeat(4, 1fr);
-             gap: var(--space-base);
-             width: 100%;
-             grid-column: 1 / span 2;
-         }
-
+        
+        .adsr-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-base);
+            width: 100%;
+            grid-column: 1 / span 2;
+        }
+        
         .control-group {
             display: flex;
             flex-direction: column;
@@ -140,7 +151,7 @@
             justify-content: flex-start;
             position: relative;
         }
-
+        
         label {
             text-transform: uppercase;
             color: #bbb;
@@ -149,12 +160,12 @@
             margin-bottom: 2px;
             font-size: 10px;
         }
-
+        
         .waveform-label {
             font-size: 16px;
             height: auto;
         }
-
+        
         .knob {
             width: 35px;
             height: 35px;
@@ -164,10 +175,10 @@
             position: relative;
             cursor: ns-resize;
             outline: none;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
             margin-bottom: 2px;
         }
-
+        
         .knob:before {
             content: '';
             position: absolute;
@@ -179,11 +190,11 @@
             transform: translateX(-50%);
             transform-origin: 50% 13.5px;
         }
-
+        
         .knob:focus {
             box-shadow: 0 0 0 2px white;
         }
-
+        
         .knob-value-display {
             color: rgba(255, 255, 255, 0.6);
             font-size: 0.8em;
@@ -199,41 +210,62 @@
             z-index: 10;
             padding: 1px 3px;
         }
-
+        
         .control-group:has(.knob:focus) .knob-value-display,
         .control-group.interacting .knob-value-display {
-             display: inline-block;
+            display: inline-block;
         }
-         .control-group:has(.knob[data-steps]:focus) .knob-value-display,
-         .control-group.interacting:has(.knob[data-steps]) .knob-value-display {
-              display: none;
-         }
-
+        
+        .control-group:has(.knob[data-steps]:focus) .knob-value-display,
+        .control-group.interacting:has(.knob[data-steps]) .knob-value-display {
+            display: none;
+        }
+        
         #effects-master-module {
             grid-template-rows: auto repeat(4, auto);
             gap: var(--space-lg);
             align-items: start;
         }
-         #effects-master-module h2 {
-             grid-column: 1 / span 2;
-         }
-
-         .effects-control-row {
-             display: grid;
-             grid-template-columns: 1fr 1fr;
-             gap: var(--space-sm);
-             width: 100%;
-             align-items: start;
-         }
-
-         /* Specific Grid placements within the panel */
-         #voice-module-0 { grid-column: 1; grid-row: 2; }
-         #voice-module-1 { grid-column: 2; grid-row: 2; }
-         #voice-module-2 { grid-column: 3; grid-row: 2; }
-         #voice-module-3 { grid-column: 4; grid-row: 2; }
-         #effects-master-module { grid-column: 5; grid-row: 2;}
-
+        
+        #effects-master-module h2 {
+            grid-column: 1 / span 2;
+        }
+        
+        .effects-control-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-sm);
+            width: 100%;
+            align-items: start;
+        }
+        /* Specific Grid placements within the panel */
+        
+        #voice-module-0 {
+            grid-column: 1;
+            grid-row: 2;
+        }
+        
+        #voice-module-1 {
+            grid-column: 2;
+            grid-row: 2;
+        }
+        
+        #voice-module-2 {
+            grid-column: 3;
+            grid-row: 2;
+        }
+        
+        #voice-module-3 {
+            grid-column: 4;
+            grid-row: 2;
+        }
+        
+        #effects-master-module {
+            grid-column: 5;
+            grid-row: 2;
+        }
         /* --- Sequencer Styles --- */
+        
         .sequencer-panel {
             grid-column: 1 / -1;
             padding: var(--space-lg);
@@ -243,7 +275,7 @@
             align-items: center;
             gap: var(--space-lg);
         }
-
+        
         .sequencer-controls {
             display: flex;
             justify-content: center;
@@ -251,7 +283,7 @@
             gap: var(--space-lg);
             width: 100%;
         }
-
+        
         .seq-button {
             padding: var(--space-sm) var(--space-base);
             font-family: "Space Mono", sans-serif;
@@ -266,34 +298,38 @@
             text-align: center;
             padding: 0;
         }
+        
         .seq-button:hover {
             background-color: var(--grey-dark);
         }
+        
         .seq-button:active {
             background-color: var(--grey-darker);
-            box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.5);
         }
+        
         .seq-button.playing {
-             background-color: var(--accent-color);
-             color: black;
-             box-shadow: 0 0 8px var(--accent-glow);
+            background-color: var(--accent-color);
+            color: black;
+            box-shadow: 0 0 8px var(--accent-glow);
         }
-         .seq-button.playing:hover {
-             background-color: var(--indicator-glow);
-         }
-
+        
+        .seq-button.playing:hover {
+            background-color: var(--indicator-glow);
+        }
+        
         .tempo-control {
-             display: flex;
-             align-items: center;
-             gap: var(--space-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
         }
-
+        
         .tempo-label {
             font-size: 10px;
             text-transform: uppercase;
             color: #bbb;
         }
-
+        
         .tempo-input {
             font-family: "Space Mono", sans-serif;
             font-size: 14px;
@@ -302,47 +338,57 @@
             border: 1px solid var(--grey-medium);
             border-radius: 3px;
             padding: 5px;
-            width: 50px; /* Fixed width */
+            width: 50px;
+            /* Fixed width */
             text-align: center;
-            appearance: textfield; /* Remove spinners */
+            appearance: textfield;
+            /* Remove spinners */
             -moz-appearance: textfield;
         }
+        
         .tempo-input::-webkit-inner-spin-button,
         .tempo-input::-webkit-outer-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
+            -webkit-appearance: none;
+            margin: 0;
         }
+        
         .tempo-input:focus {
-             outline: none;
-             box-shadow: 0 0 0 2px var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 2px var(--accent-color);
         }
-
-
+        
         .sequencer-grid-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px; /* Gap between indicators and grid */
+            gap: 5px;
+            /* Gap between indicators and grid */
             width: 100%;
-            overflow-x: auto; /* Allow horizontal scroll if needed */
+            overflow-x: auto;
+            /* Allow horizontal scroll if needed */
             padding: 5px 0;
         }
-
+        
         .step-indicator-row {
             display: grid;
             grid-template-columns: repeat(16, 1fr);
-            gap: 4px; /* Match button gap */
-            width: calc(100% - 20px); /* Adjust width to align roughly */
-            max-width: 600px; /* Max width for indicators */
-            margin: 0 auto; /* Center indicators */
-            margin-bottom: 8px; /* Space below indicators */
+            gap: 4px;
+            /* Match button gap */
+            width: calc(100% - 20px);
+            /* Adjust width to align roughly */
+            max-width: 600px;
+            /* Max width for indicators */
+            margin: 0 auto;
+            /* Center indicators */
+            margin-bottom: 8px;
+            /* Space below indicators */
         }
-
+        
         .step-indicator {
             display: flex;
             justify-content: center;
         }
-
+        
         .step-indicator:before {
             content: "";
             display: block;
@@ -351,454 +397,1237 @@
             width: 10px;
             background-color: var(--red-off);
         }
+        
         .step-indicator.active:before {
             background-color: var(--red-on);
             box-shadow: 0 0 8px var(--red-glow), inset 0 0 3px rgba(255, 200, 200, 0.5);
         }
-
+        
         .sequencer-grid {
             display: grid;
             grid-template-columns: repeat(16, 1fr);
             gap: 4px;
-            width: calc(100% - 20px); /* Adjust width to align roughly */
-            max-width: 600px; /* Max width for grid */
-            margin: 0 auto; /* Center grid */
+            width: calc(100% - 20px);
+            /* Adjust width to align roughly */
+            max-width: 600px;
+            /* Max width for grid */
+            margin: 0 auto;
+            /* Center grid */
         }
-
+        
         .step-button {
-            width: 100%; /* Fill grid cell */
-            aspect-ratio: 1 / 1; /* Make buttons square */
+            width: 100%;
+            /* Fill grid cell */
+            aspect-ratio: 1 / 1;
+            /* Make buttons square */
             background-color: var(--grey-dark);
             border: 1px solid var(--grey-medium);
             border-radius: 3px;
             cursor: pointer;
         }
+        
         .step-button:hover {
             background-color: var(--grey-medium);
             border-color: var(--grey-light);
         }
+        
         .step-button.active {
             background-color: var(--accent-color);
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.4);
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.4);
         }
+        
         .step-button.playing.active {
-             background-color: white;
-             border-color: white;
+            background-color: white;
+            border-color: white;
         }
-
     </style>
 </head>
+
 <body>
 
-<div class="drum-machine-panel" id="drum-machine-panel">
-    <div class="header-area">
-        <h1>AH DS-02</h1>
-    </div>
+    <div class="drum-machine-panel" id="drum-machine-panel">
+        <div class="header-area">
+            <h1>AH DS-02</h1>
+        </div>
 
-    <!-- Voice Modules (HTML unchanged from previous version) -->
-    <!-- Voice 1 (A) -->
-    <div class="module voice-module" id="voice-module-0">
-        <div class="indicator-light" id="light-0"></div>
-        <div class="control-grid">
-            <div class="control-group"><label for="v0-pitch">Pitch</label><div class="knob" id="v0-pitch" data-param="voices.0.pitch" data-min="20" data-max="2000" data-value="80" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v0-pitch-value"></span></div>
-            <div class="control-group"><label for="v0-wave"><span class="waveform-label" id="v0-wave-indicator">∿</span></label><div class="knob" id="v0-wave" data-param="voices.0.wave" data-steps="sine,square,sawtooth,noise" data-value="0" tabindex="0"></div></div>
-            <div class="control-group"><label for="v0-level">Level</label><div class="knob" id="v0-level" data-param="voices.0.level" data-min="0" data-max="1" data-value="0.8" tabindex="0"></div><span class="knob-value-display" id="v0-level-value"></span></div>
-            <div class="control-group"><label for="v0-cutoff">Cutoff</label><div class="knob" id="v0-cutoff" data-param="voices.0.cutoff" data-min="40" data-max="20000" data-value="40" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v0-cutoff-value"></span></div>
-            <div class="adsr-grid">
-                <div class="control-group"><label for="v0-attack">A</label><div class="knob" id="v0-attack" data-param="voices.0.env.attack" data-min="0.001" data-max="0.05" data-value="0.001" tabindex="0"></div><span class="knob-value-display" id="v0-attack-value"></span></div>
-                <div class="control-group"><label for="v0-decay">D</label><div class="knob" id="v0-decay" data-param="voices.0.env.decay" data-min="0.001" data-max="0.3" data-value="0.03" tabindex="0"></div><span class="knob-value-display" id="v0-decay-value"></span></div>
-                <div class="control-group"><label for="v0-sustain">S</label><div class="knob" id="v0-sustain" data-param="voices.0.env.sustain" data-min="0" data-max="1" data-value="0" tabindex="0"></div><span class="knob-value-display" id="v0-sustain-value"></span></div>
-                <div class="control-group"><label for="v0-release">R</label><div class="knob" id="v0-release" data-param="voices.0.env.release" data-min="0.001" data-max="2" data-value="0.1" tabindex="0"></div><span class="knob-value-display" id="v0-release-value"></span></div>
+        <!-- Voice Modules (HTML unchanged from previous version) -->
+        <!-- Voice 1 (A) -->
+        <div class="module voice-module" id="voice-module-0">
+            <div class="indicator-light" id="light-0"></div>
+            <div class="control-grid">
+                <div class="control-group"><label for="v0-pitch">Pitch</label>
+                    <div class="knob" id="v0-pitch" data-param="voices.0.pitch" data-min="20" data-max="2000" data-value="80" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v0-pitch-value"></span>
+                </div>
+                <div class="control-group"><label for="v0-wave"><span class="waveform-label"
+                            id="v0-wave-indicator">∿</span></label>
+                    <div class="knob" id="v0-wave" data-param="voices.0.wave" data-steps="sine,square,sawtooth,noise" data-value="0" tabindex="0"></div>
+                </div>
+                <div class="control-group"><label for="v0-level">Level</label>
+                    <div class="knob" id="v0-level" data-param="voices.0.level" data-min="0" data-max="1" data-value="0.8" tabindex="0"></div><span class="knob-value-display" id="v0-level-value"></span>
+                </div>
+                <div class="control-group"><label for="v0-cutoff">Cutoff</label>
+                    <div class="knob" id="v0-cutoff" data-param="voices.0.cutoff" data-min="40" data-max="20000" data-value="40" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v0-cutoff-value"></span>
+                </div>
+                <div class="adsr-grid">
+                    <div class="control-group"><label for="v0-attack">A</label>
+                        <div class="knob" id="v0-attack" data-param="voices.0.env.attack" data-min="0.001" data-max="0.05" data-value="0.001" tabindex="0"></div><span class="knob-value-display" id="v0-attack-value"></span>
+                    </div>
+                    <div class="control-group"><label for="v0-decay">D</label>
+                        <div class="knob" id="v0-decay" data-param="voices.0.env.decay" data-min="0.001" data-max="0.3" data-value="0.03" tabindex="0"></div><span class="knob-value-display" id="v0-decay-value"></span>
+                    </div>
+                    <div class="control-group"><label for="v0-sustain">S</label>
+                        <div class="knob" id="v0-sustain" data-param="voices.0.env.sustain" data-min="0" data-max="1" data-value="0" tabindex="0"></div><span class="knob-value-display" id="v0-sustain-value"></span>
+                    </div>
+                    <div class="control-group"><label for="v0-release">R</label>
+                        <div class="knob" id="v0-release" data-param="voices.0.env.release" data-min="0.001" data-max="2" data-value="0.1" tabindex="0"></div><span class="knob-value-display" id="v0-release-value"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Voice 2 (S) -->
+        <div class="module voice-module" id="voice-module-1">
+            <div class="indicator-light" id="light-1"></div>
+            <div class="control-grid">
+                <div class="control-group"><label for="v1-pitch">Pitch</label>
+                    <div class="knob" id="v1-pitch" data-param="voices.1.pitch" data-min="20" data-max="2000" data-value="180" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v1-pitch-value"></span>
+                </div>
+                <div class="control-group"><label for="v1-wave"><span class="waveform-label"
+                            id="v1-wave-indicator">∿</span></label>
+                    <div class="knob" id="v1-wave" data-param="voices.1.wave" data-steps="sine,square,sawtooth,noise" data-value="3" tabindex="0"></div>
+                </div>
+                <div class="control-group"><label for="v1-level">Level</label>
+                    <div class="knob" id="v1-level" data-param="voices.1.level" data-min="0" data-max="1" data-value="0.5" tabindex="0"></div><span class="knob-value-display" id="v1-level-value"></span>
+                </div>
+                <div class="control-group"><label for="v1-cutoff">Cutoff</label>
+                    <div class="knob" id="v1-cutoff" data-param="voices.1.cutoff" data-min="40" data-max="20000" data-value="100" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v1-cutoff-value"></span>
+                </div>
+                <div class="adsr-grid">
+                    <div class="control-group"><label for="v1-attack">A</label>
+                        <div class="knob" id="v1-attack" data-param="voices.1.env.attack" data-min="0.001" data-max="0.05" data-value="0.001" tabindex="0"></div><span class="knob-value-display" id="v1-attack-value"></span>
+                    </div>
+                    <div class="control-group"><label for="v1-decay">D</label>
+                        <div class="knob" id="v1-decay" data-param="voices.1.env.decay" data-min="0.001" data-max="0.3" data-value="0.05" tabindex="0"></div><span class="knob-value-display" id="v1-decay-value"></span>
+                    </div>
+                    <div class="control-group"><label for="v1-sustain">S</label>
+                        <div class="knob" id="v1-sustain" data-param="voices.1.env.sustain" data-min="0" data-max="1" data-value="0.2" tabindex="0"></div><span class="knob-value-display" id="v1-sustain-value"></span>
+                    </div>
+                    <div class="control-group"><label for="v1-release">R</label>
+                        <div class="knob" id="v1-release" data-param="voices.1.env.release" data-min="0.001" data-max="2" data-value="0.2" tabindex="0"></div><span class="knob-value-display" id="v1-release-value"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Voice 3 (D) -->
+        <div class="module voice-module" id="voice-module-2">
+            <div class="indicator-light" id="light-2"></div>
+            <div class="control-grid">
+                <div class="control-group"><label for="v2-pitch">Pitch</label>
+                    <div class="knob" id="v2-pitch" data-param="voices.2.pitch" data-min="20" data-max="4000" data-value="800" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v2-pitch-value"></span>
+                </div>
+                <div class="control-group"><label for="v2-wave"><span class="waveform-label"
+                            id="v2-wave-indicator">∿</span></label>
+                    <div class="knob" id="v2-wave" data-param="voices.2.wave" data-steps="sine,square,sawtooth,noise" data-value="3" tabindex="0"></div>
+                </div>
+                <div class="control-group"><label for="v2-level">Level</label>
+                    <div class="knob" id="v2-level" data-param="voices.2.level" data-min="0" data-max="1" data-value="0.5" tabindex="0"></div><span class="knob-value-display" id="v2-level-value"></span>
+                </div>
+                <div class="control-group"><label for="v2-cutoff">Cutoff</label>
+                    <div class="knob" id="v2-cutoff" data-param="voices.2.cutoff" data-min="40" data-max="20000" data-value="5000" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v2-cutoff-value"></span>
+                </div>
+                <div class="adsr-grid">
+                    <div class="control-group"><label for="v2-attack">A</label>
+                        <div class="knob" id="v2-attack" data-param="voices.2.env.attack" data-min="0.001" data-max="0.5" data-value="0.001" tabindex="0"></div><span class="knob-value-display" id="v2-attack-value"></span>
+                    </div>
+                    <div class="control-group"><label for="v2-decay">D</label>
+                        <div class="knob" id="v2-decay" data-param="voices.2.env.decay" data-min="0.001" data-max="0.3" data-value="0.03" tabindex="0"></div><span class="knob-value-display" id="v2-decay-value"></span>
+                    </div>
+                    <div class="control-group"><label for="v2-sustain">S</label>
+                        <div class="knob" id="v2-sustain" data-param="voices.2.env.sustain" data-min="0" data-max="1" data-value="0" tabindex="0"></div><span class="knob-value-display" id="v2-sustain-value"></span>
+                    </div>
+                    <div class="control-group"><label for="v2-release">R</label>
+                        <div class="knob" id="v2-release" data-param="voices.2.env.release" data-min="0.001" data-max="1" data-value="0.1" tabindex="0"></div><span class="knob-value-display" id="v2-release-value"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Voice 4 (F) -->
+        <div class="module voice-module" id="voice-module-3">
+            <div class="indicator-light" id="light-3"></div>
+            <div class="control-grid">
+                <div class="control-group"><label for="v3-pitch">Pitch</label>
+                    <div class="knob" id="v3-pitch" data-param="voices.3.pitch" data-min="100" data-max="8000" data-value="3500" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v3-pitch-value"></span>
+                </div>
+                <div class="control-group"><label for="v3-wave"><span class="waveform-label"
+                            id="v3-wave-indicator">∿</span></label>
+                    <div class="knob" id="v3-wave" data-param="voices.3.wave" data-steps="sine,square,sawtooth,noise" data-value="3" tabindex="0"></div>
+                </div>
+                <div class="control-group"><label for="v3-level">Level</label>
+                    <div class="knob" id="v3-level" data-param="voices.3.level" data-min="0" data-max="1" data-value="0.5" tabindex="0"></div><span class="knob-value-display" id="v3-level-value"></span>
+                </div>
+                <div class="control-group"><label for="v3-cutoff">Cutoff</label>
+                    <div class="knob" id="v3-cutoff" data-param="voices.3.cutoff" data-min="40" data-max="20000" data-value="5000" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v3-cutoff-value"></span>
+                </div>
+                <div class="adsr-grid">
+                    <div class="control-group"><label for="v3-attack">A</label>
+                        <div class="knob" id="v3-attack" data-param="voices.3.env.attack" data-min="0.001" data-max="0.2" data-value="0.001" tabindex="0"></div><span class="knob-value-display" id="v3-attack-value"></span>
+                    </div>
+                    <div class="control-group"><label for="v3-decay">D</label>
+                        <div class="knob" id="v3-decay" data-param="voices.3.env.decay" data-min="0.001" data-max="0.5" data-value="0.3" tabindex="0"></div><span class="knob-value-display" id="v3-decay-value"></span>
+                    </div>
+                    <div class="control-group"><label for="v3-sustain">S</label>
+                        <div class="knob" id="v3-sustain" data-param="voices.3.env.sustain" data-min="0" data-max="1" data-value="0" tabindex="0"></div><span class="knob-value-display" id="v3-sustain-value"></span>
+                    </div>
+                    <div class="control-group"><label for="v3-release">R</label>
+                        <div class="knob" id="v3-release" data-param="voices.3.env.release" data-min="0.001" data-max="0.5" data-value="0.03" tabindex="0"></div><span class="knob-value-display" id="v3-release-value"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Effects & Master (HTML unchanged) -->
+        <div class="module" id="effects-master-module">
+            <div class="effects-control-row">
+                <div class="control-group">
+                    <label for="delay-time">Dly Time</label>
+                    <div class="knob" id="delay-time" data-param="effects.delay.time" data-min="0.01" data-max="1" data-value="0.15" data-curve="log" tabindex="0"></div>
+                    <span class="knob-value-display" id="delay-time-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="delay-feedback">Dly Fdbk</label>
+                    <div class="knob" id="delay-feedback" data-param="effects.delay.feedback" data-min="0" data-max="0.95" data-value=".4" tabindex="0"></div>
+                    <span class="knob-value-display" id="delay-feedback-value"></span>
+                </div>
+            </div>
+            <div class="effects-control-row">
+                <div class="control-group">
+                    <label for="delay-level">Dly Level</label>
+                    <div class="knob" id="delay-level" data-param="effects.delay.level" data-min="0" data-max="1" data-value="0" tabindex="0"></div><span class="knob-value-display" id="delay-level-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="reverb-level">Reverb</label>
+                    <div class="knob" id="reverb-level" data-param="effects.reverb.level" data-min="0" data-max="1" data-value="0" tabindex="0"></div>
+                    <span class="knob-value-display" id="reverb-level-value"></span>
+                </div>
+            </div>
+            <div style="margin-top: auto;" class="effects-control-row">
+                <div class="control-group">
+                    <label for="distortion-amount">Drive</label>
+                    <div class="knob" id="distortion-amount" data-param="effects.distortion.amount" data-min="0" data-max="100" data-value="0" tabindex="0"></div>
+                    <span class="knob-value-display" id="distortion-amount-value"></span>
+                </div>
+                <div class="control-group">
+                    <label for="volume">Volume</label>
+                    <div class="knob" id="volume" data-param="masterVolume" data-min="0" data-max="1" data-value="0.6" tabindex="0"></div><span class="knob-value-display" id="volume-value"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sequencer Panel -->
+        <div class="sequencer-panel" id="sequencer-panel">
+            <div class="sequencer-controls">
+                <button id="play-stop-button" class="seq-button">▶︎</button>
+                <div class="tempo-control">
+                    <input type="number" id="tempo-input" class="tempo-input" value="120" min="30" max="300">
+                </div>
+                <button id="reset-button" class="seq-button">⨂</button>
+            </div>
+            <div class="sequencer-grid-container">
+                <div class="step-indicator-row" id="step-indicator-row">
+                    <!-- Indicators will be generated by JS -->
+                </div>
+                <div class="sequencer-grid" id="sequencer-grid">
+                    <!-- Step buttons will be generated by JS -->
+                </div>
             </div>
         </div>
     </div>
-    <!-- Voice 2 (S) -->
-    <div class="module voice-module" id="voice-module-1">
-        <div class="indicator-light" id="light-1"></div>
-        <div class="control-grid">
-            <div class="control-group"><label for="v1-pitch">Pitch</label><div class="knob" id="v1-pitch" data-param="voices.1.pitch" data-min="20" data-max="2000" data-value="180" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v1-pitch-value"></span></div>
-            <div class="control-group"><label for="v1-wave"><span class="waveform-label" id="v1-wave-indicator">∿</span></label><div class="knob" id="v1-wave" data-param="voices.1.wave" data-steps="sine,square,sawtooth,noise" data-value="3" tabindex="0"></div></div>
-            <div class="control-group"><label for="v1-level">Level</label><div class="knob" id="v1-level" data-param="voices.1.level" data-min="0" data-max="1" data-value="0.5" tabindex="0"></div><span class="knob-value-display" id="v1-level-value"></span></div>
-            <div class="control-group"><label for="v1-cutoff">Cutoff</label><div class="knob" id="v1-cutoff" data-param="voices.1.cutoff" data-min="40" data-max="20000" data-value="100" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v1-cutoff-value"></span></div>
-            <div class="adsr-grid">
-                <div class="control-group"><label for="v1-attack">A</label><div class="knob" id="v1-attack" data-param="voices.1.env.attack" data-min="0.001" data-max="0.05" data-value="0.001" tabindex="0"></div><span class="knob-value-display" id="v1-attack-value"></span></div>
-                <div class="control-group"><label for="v1-decay">D</label><div class="knob" id="v1-decay" data-param="voices.1.env.decay" data-min="0.001" data-max="0.3" data-value="0.05" tabindex="0"></div><span class="knob-value-display" id="v1-decay-value"></span></div>
-                <div class="control-group"><label for="v1-sustain">S</label><div class="knob" id="v1-sustain" data-param="voices.1.env.sustain" data-min="0" data-max="1" data-value="0.2" tabindex="0"></div><span class="knob-value-display" id="v1-sustain-value"></span></div>
-                <div class="control-group"><label for="v1-release">R</label><div class="knob" id="v1-release" data-param="voices.1.env.release" data-min="0.001" data-max="2" data-value="0.2" tabindex="0"></div><span class="knob-value-display" id="v1-release-value"></span></div>
-            </div>
-        </div>
-    </div>
-    <!-- Voice 3 (D) -->
-    <div class="module voice-module" id="voice-module-2">
-        <div class="indicator-light" id="light-2"></div>
-        <div class="control-grid">
-            <div class="control-group"><label for="v2-pitch">Pitch</label><div class="knob" id="v2-pitch" data-param="voices.2.pitch" data-min="20" data-max="4000" data-value="800" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v2-pitch-value"></span></div>
-            <div class="control-group"><label for="v2-wave"><span class="waveform-label" id="v2-wave-indicator">∿</span></label><div class="knob" id="v2-wave" data-param="voices.2.wave" data-steps="sine,square,sawtooth,noise" data-value="3" tabindex="0"></div></div>
-            <div class="control-group"><label for="v2-level">Level</label><div class="knob" id="v2-level" data-param="voices.2.level" data-min="0" data-max="1" data-value="0.5" tabindex="0"></div><span class="knob-value-display" id="v2-level-value"></span></div>
-            <div class="control-group"><label for="v2-cutoff">Cutoff</label><div class="knob" id="v2-cutoff" data-param="voices.2.cutoff" data-min="40" data-max="20000" data-value="5000" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v2-cutoff-value"></span></div>
-            <div class="adsr-grid">
-                <div class="control-group"><label for="v2-attack">A</label><div class="knob" id="v2-attack" data-param="voices.2.env.attack" data-min="0.001" data-max="0.5" data-value="0.001" tabindex="0"></div><span class="knob-value-display" id="v2-attack-value"></span></div>
-                <div class="control-group"><label for="v2-decay">D</label><div class="knob" id="v2-decay" data-param="voices.2.env.decay" data-min="0.001" data-max="0.3" data-value="0.03" tabindex="0"></div><span class="knob-value-display" id="v2-decay-value"></span></div>
-                <div class="control-group"><label for="v2-sustain">S</label><div class="knob" id="v2-sustain" data-param="voices.2.env.sustain" data-min="0" data-max="1" data-value="0" tabindex="0"></div><span class="knob-value-display" id="v2-sustain-value"></span></div>
-                <div class="control-group"><label for="v2-release">R</label><div class="knob" id="v2-release" data-param="voices.2.env.release" data-min="0.001" data-max="1" data-value="0.1" tabindex="0"></div><span class="knob-value-display" id="v2-release-value"></span></div>
-            </div>
-        </div>
-    </div>
-    <!-- Voice 4 (F) -->
-    <div class="module voice-module" id="voice-module-3">
-        <div class="indicator-light" id="light-3"></div>
-        <div class="control-grid">
-            <div class="control-group"><label for="v3-pitch">Pitch</label><div class="knob" id="v3-pitch" data-param="voices.3.pitch" data-min="100" data-max="8000" data-value="3500" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v3-pitch-value"></span></div>
-            <div class="control-group"><label for="v3-wave"><span class="waveform-label" id="v3-wave-indicator">∿</span></label><div class="knob" id="v3-wave" data-param="voices.3.wave" data-steps="sine,square,sawtooth,noise" data-value="3" tabindex="0"></div></div>
-            <div class="control-group"><label for="v3-level">Level</label><div class="knob" id="v3-level" data-param="voices.3.level" data-min="0" data-max="1" data-value="0.5" tabindex="0"></div><span class="knob-value-display" id="v3-level-value"></span></div>
-            <div class="control-group"><label for="v3-cutoff">Cutoff</label><div class="knob" id="v3-cutoff" data-param="voices.3.cutoff" data-min="40" data-max="20000" data-value="5000" data-curve="log" tabindex="0"></div><span class="knob-value-display" id="v3-cutoff-value"></span></div>
-            <div class="adsr-grid">
-                <div class="control-group"><label for="v3-attack">A</label><div class="knob" id="v3-attack" data-param="voices.3.env.attack" data-min="0.001" data-max="0.2" data-value="0.001" tabindex="0"></div><span class="knob-value-display" id="v3-attack-value"></span></div>
-                <div class="control-group"><label for="v3-decay">D</label><div class="knob" id="v3-decay" data-param="voices.3.env.decay" data-min="0.001" data-max="0.5" data-value="0.3" tabindex="0"></div><span class="knob-value-display" id="v3-decay-value"></span></div>
-                <div class="control-group"><label for="v3-sustain">S</label><div class="knob" id="v3-sustain" data-param="voices.3.env.sustain" data-min="0" data-max="1" data-value="0" tabindex="0"></div><span class="knob-value-display" id="v3-sustain-value"></span></div>
-                <div class="control-group"><label for="v3-release">R</label><div class="knob" id="v3-release" data-param="voices.3.env.release" data-min="0.001" data-max="0.5" data-value="0.03" tabindex="0"></div><span class="knob-value-display" id="v3-release-value"></span></div>
-            </div>
-        </div>
-    </div>
-    <!-- Effects & Master (HTML unchanged) -->
-    <div class="module" id="effects-master-module">
-        <div class="effects-control-row">
-            <div class="control-group">
-                <label for="delay-time">Dly Time</label>
-                <div class="knob" id="delay-time" data-param="effects.delay.time" data-min="0.01" data-max="1" data-value="0.15" data-curve="log" tabindex="0"></div>
-                <span class="knob-value-display" id="delay-time-value"></span>
-            </div>
-            <div class="control-group">
-                <label for="delay-feedback">Dly Fdbk</label>
-                <div class="knob" id="delay-feedback" data-param="effects.delay.feedback" data-min="0" data-max="0.95" data-value=".4" tabindex="0"></div>
-                <span class="knob-value-display" id="delay-feedback-value"></span>
-            </div>
-        </div>
-        <div class="effects-control-row">
-            <div class="control-group">
-                <label for="delay-level">Dly Level</label>
-                <div class="knob" id="delay-level" data-param="effects.delay.level" data-min="0" data-max="1" data-value="0" tabindex="0"></div><span class="knob-value-display" id="delay-level-value"></span>
-            </div>
-            <div class="control-group">
-                <label for="reverb-level">Reverb</label>
-                <div class="knob" id="reverb-level" data-param="effects.reverb.level" data-min="0" data-max="1" data-value="0" tabindex="0"></div>
-                <span class="knob-value-display" id="reverb-level-value"></span>
-            </div>
-        </div>
-        <div style="margin-top: auto;" class="effects-control-row">
-            <div class="control-group">
-                <label for="distortion-amount">Drive</label>
-                <div class="knob" id="distortion-amount" data-param="effects.distortion.amount" data-min="0" data-max="100" data-value="0" tabindex="0"></div>
-                <span class="knob-value-display" id="distortion-amount-value"></span>
-            </div>
-            <div class="control-group">
-                <label for="volume">Volume</label>
-                <div class="knob" id="volume" data-param="masterVolume" data-min="0" data-max="1" data-value="0.6" tabindex="0"></div><span class="knob-value-display" id="volume-value"></span></div></div>
-    </div>
-
-    <!-- Sequencer Panel -->
-    <div class="sequencer-panel" id="sequencer-panel">
-        <div class="sequencer-controls">
-            <button id="play-stop-button" class="seq-button">▶︎</button>
-            <div class="tempo-control">
-                <input type="number" id="tempo-input" class="tempo-input" value="120" min="30" max="300">
-            </div>
-            <button id="reset-button" class="seq-button">⨂</button>
-        </div>
-        <div class="sequencer-grid-container">
-            <div class="step-indicator-row" id="step-indicator-row">
-                <!-- Indicators will be generated by JS -->
-            </div>
-            <div class="sequencer-grid" id="sequencer-grid">
-                <!-- Step buttons will be generated by JS -->
-            </div>
-        </div>
-    </div>
-</div> <!-- End of drum-machine-panel -->
+    <!-- End of drum-machine-panel -->
 
 
 
-<script>
-    // ----- UI ELEMENTS -----
-    const drumMachinePanel = document.getElementById('drum-machine-panel');
-    let knobs; // Populated later
-    const indicatorLights = Array.from({ length: 4 }, (_, i) => document.getElementById(`light-${i}`));
-    const waveformIndicators = Array.from({ length: 4 }, (_, i) => document.getElementById(`v${i}-wave-indicator`));
-    // Sequencer UI Elements
-    const sequencerPanel = document.getElementById('sequencer-panel');
-    const playStopButton = document.getElementById('play-stop-button');
-    const tempoInput = document.getElementById('tempo-input');
-    const resetButton = document.getElementById('reset-button');
-    const stepIndicatorRow = document.getElementById('step-indicator-row');
-    const sequencerGrid = document.getElementById('sequencer-grid');
-    let stepButtons = []; // 2D array [voice][step]
-    let stepIndicators = []; // Array of indicator divs
+    <script>
+        // ----- UI ELEMENTS -----
+        const drumMachinePanel = document.getElementById('drum-machine-panel');
+        let knobs; // Populated later
+        const indicatorLights = Array.from({
+            length: 4
+        }, (_, i) => document.getElementById(`light-${i}`));
+        const waveformIndicators = Array.from({
+            length: 4
+        }, (_, i) => document.getElementById(`v${i}-wave-indicator`));
+        // Sequencer UI Elements
+        const sequencerPanel = document.getElementById('sequencer-panel');
+        const playStopButton = document.getElementById('play-stop-button');
+        const tempoInput = document.getElementById('tempo-input');
+        const resetButton = document.getElementById('reset-button');
+        const stepIndicatorRow = document.getElementById('step-indicator-row');
+        const sequencerGrid = document.getElementById('sequencer-grid');
+        let stepButtons = []; // 2D array [voice][step]
+        let stepIndicators = []; // Array of indicator divs
 
-    // ----- AUDIO CONTEXT & NODES -----
-    let audioContext;
-    let masterGain;
-    let effectsInput;
-    let distortionPreGain;
-    let distortion;
-    let delay, delayFeedbackGain, delayWetGain;
-    let reverb, reverbWetGain;
-    let noiseBuffer;
+        // ----- AUDIO CONTEXT & NODES -----
+        let audioContext;
+        let masterGain;
+        let effectsInput;
+        let distortionPreGain;
+        let distortion;
+        let delay, delayFeedbackGain, delayWetGain;
+        let reverb, reverbWetGain;
+        let noiseBuffer;
 
-    let isAudioInitialized = false;
-    let isAudioResumed = false;
+        let isAudioInitialized = false;
+        let isAudioResumed = false;
 
-    // ----- SYNTH PARAMETERS -----
-    const NUM_VOICES = 4;
-    const NUM_STEPS = 16;
-    const WAVEFORMS = ['sine', 'square', 'sawtooth', 'noise'];
-    const WAVEFORM_INDICATORS = ['∿', '⨅', '⩘', '░'];
+        // ----- SYNTH PARAMETERS -----
+        const NUM_VOICES = 4;
+        const NUM_STEPS = 16;
+        const WAVEFORMS = ['sine', 'square', 'sawtooth', 'noise'];
+        const WAVEFORM_INDICATORS = ['∿', '⨅', '⩘', '░'];
 
-    const params = { // Default parameters (unchanged)
-        voices: Array.from({ length: NUM_VOICES }, (_, i) => ({
-            pitch: [60, 180, 800, 3500][i], wave: [0, 3, 3, 3][i], level: [0.8, 0.7, 0.7, 0.6][i], cutoff: [40, 100, 200, 5000][i],
-            env: { attack: [0.01, 0.005, 0.002, 0.001][i], decay: [0.15, 0.12, 0.08, 0.05][i], sustain: 0, release: [0.1, 0.05, 0.1, 0.03][i] }
-        })),
-        effects: { distortion: { amount: 0 }, delay: { time: 0.15, feedback: 0.4, level: 0 }, reverb: { level: 0 } }, masterVolume: 0.6
-    };
+        const params = { // Default parameters (unchanged)
+            voices: Array.from({
+                length: NUM_VOICES
+            }, (_, i) => ({
+                pitch: [60, 180, 800, 3500][i],
+                wave: [0, 3, 3, 3][i],
+                level: [0.8, 0.7, 0.7, 0.6][i],
+                cutoff: [40, 100, 200, 5000][i],
+                env: {
+                    attack: [0.01, 0.005, 0.002, 0.001][i],
+                    decay: [0.15, 0.12, 0.08, 0.05][i],
+                    sustain: 0,
+                    release: [0.1, 0.05, 0.1, 0.03][i]
+                }
+            })),
+            effects: {
+                distortion: {
+                    amount: 0
+                },
+                delay: {
+                    time: 0.15,
+                    feedback: 0.4,
+                    level: 0
+                },
+                reverb: {
+                    level: 0
+                }
+            },
+            masterVolume: 0.6
+        };
 
-    let activeSources = Array.from({ length: NUM_VOICES }, () => []);
+        let activeSources = Array.from({
+            length: NUM_VOICES
+        }, () => []);
 
-    // ----- KEY MAPPING -----
-    const keyToVoiceIndex = { 'KeyA': 0, 'KeyS': 1, 'KeyD': 2, 'KeyF': 3 };
+        // ----- KEY MAPPING -----
+        const keyToVoiceIndex = {
+            'KeyA': 0,
+            'KeyS': 1,
+            'KeyD': 2,
+            'KeyF': 3
+        };
 
-    // ----- SEQUENCER STATE -----
-    const sequencer = { // (unchanged)
-        steps: Array.from({ length: NUM_VOICES }, () => Array(NUM_STEPS).fill(0)), tempo: 120.0, currentStep: 0, isPlaying: false, startTime: 0, nextStepTime: 0, stepDuration: 0, lookahead: 25.0, scheduleAheadTime: 0.1, timerId: null
-    };
+        // ----- SEQUENCER STATE -----
+        const sequencer = { // (unchanged)
+            steps: Array.from({
+                length: NUM_VOICES
+            }, () => Array(NUM_STEPS).fill(0)),
+            tempo: 120.0,
+            currentStep: 0,
+            isPlaying: false,
+            startTime: 0,
+            nextStepTime: 0,
+            stepDuration: 0,
+            lookahead: 25.0,
+            scheduleAheadTime: 0.1,
+            timerId: null
+        };
 
-    // ----- SEQUENCER DRAG STATE -----
-    let isDraggingSeqStep = false;
-    let dragSeqStepMode = null; // 'activate' or 'deactivate'
-    let dragSeqStepVoice = -1;
+        // ----- SEQUENCER DRAG STATE -----
+        let isDraggingSeqStep = false;
+        let dragSeqStepMode = null; // 'activate' or 'deactivate'
+        let dragSeqStepVoice = -1;
 
-    // ----- UTILITY FUNCTIONS -----
-    // (createNoiseBuffer, makeDistortionCurve, createReverbImpulse, formatKnobValue, updateKnobValueDisplay - unchanged)
-    function createNoiseBuffer(context){const bufferSize=context.sampleRate*2;const buffer=context.createBuffer(1,bufferSize,context.sampleRate);const output=buffer.getChannelData(0);for(let i=0;i<bufferSize;i++){output[i]=Math.random()*2-1;}return buffer;}
-    function makeDistortionCurve(amount,context){if(!context)return null;const k=Math.max(0,amount);const n_samples=44100;const curve=new Float32Array(n_samples);const curveSharpness=1+(k/100)*5;for(let i=0;i<n_samples;++i){let x=i*2/n_samples-1;curve[i]=Math.tanh(x*curveSharpness);}return curve;}
-    function createReverbImpulse(context,duration=0.8,decay=1){const sampleRate=context.sampleRate;const length=sampleRate*duration;const impulse=context.createBuffer(2,length,sampleRate);const impulseL=impulse.getChannelData(0);const impulseR=impulse.getChannelData(1);for(let i=0;i<length;i++){const n=length-i;impulseL[i]=(Math.random()*2-1)*Math.pow(n/length,decay);impulseR[i]=(Math.random()*2-1)*Math.pow(n/length,decay);}return impulse;}
-    function formatKnobValue(value,knobId){if(typeof value!=='number'||!isFinite(value))return'---';if(knobId){if(knobId.includes('attack')||knobId.includes('decay')||knobId.includes('release')||knobId.includes('delay-time')){return value<1?(value*1000).toFixed(0)+'ms':value.toFixed(2)+'s';}else if(knobId.includes('pitch')||knobId.includes('cutoff')){return value>=1000?(value/1000).toFixed(1)+'k':value.toFixed(0);}else if(knobId.includes('level')||knobId.includes('feedback')||knobId.includes('sustain')||knobId.includes('volume')){return value.toFixed(2);}else if(knobId.includes('distortion-amount')){return value.toFixed(0);}}return value.toFixed(2);}
-    function updateKnobValueDisplay(knob,value){if(knob&&!knob.dataset.steps){const displayId=knob.id+'-value';const displayElement=document.getElementById(displayId);if(displayElement){displayElement.textContent=formatKnobValue(value,knob.id);}}}
-
-
-    // ----- AUDIO CONTEXT & INITIALIZATION -----
-    async function ensureAudioContextResumed() { // (unchanged)
-        if (!audioContext) return false;
-        if (audioContext.state === 'running') { if (!isAudioResumed) { isAudioResumed = true; masterGain.gain.linearRampToValueAtTime(params.masterVolume, audioContext.currentTime + 0.05); } return true; }
-        if (audioContext.state === 'suspended') { try { await audioContext.resume(); if (audioContext.state === 'running') { console.log("AudioContext Resumed."); isAudioResumed = true; masterGain.gain.linearRampToValueAtTime(params.masterVolume, audioContext.currentTime + 0.05); return true; } else { isAudioResumed = false; return false; } } catch (e) { console.error("Error resuming:", e); isAudioResumed = false; return false; } } return false;
-    }
-    async function initAudio() { // (unchanged)
-        if (isAudioInitialized) return; console.log("Initializing AudioContext..."); try { audioContext = new (window.AudioContext || window.webkitAudioContext)(); if (!audioContext) throw new Error("Web Audio API not supported."); isAudioInitialized = true; console.log("Initial State:", audioContext.state); masterGain = audioContext.createGain(); masterGain.gain.value = 0; effectsInput = audioContext.createGain(); distortionPreGain = audioContext.createGain(); distortion = audioContext.createWaveShaper(); delay = audioContext.createDelay(2.0); delayFeedbackGain = audioContext.createGain(); delayWetGain = audioContext.createGain(); reverb = audioContext.createConvolver(); reverbWetGain = audioContext.createGain(); noiseBuffer = createNoiseBuffer(audioContext); reverb.buffer = createReverbImpulse(audioContext); effectsInput.connect(distortionPreGain); distortionPreGain.connect(distortion); distortion.connect(masterGain); distortion.connect(delay); delay.connect(delayFeedbackGain); delayFeedbackGain.connect(delay); delay.connect(delayWetGain); delayWetGain.connect(masterGain); distortion.connect(reverb); reverb.connect(reverbWetGain); reverbWetGain.connect(masterGain); masterGain.connect(audioContext.destination); updateParameterValue('effects.distortion.amount', params.effects.distortion.amount, true); updateParameterValue('effects.delay.time', params.effects.delay.time, true); updateParameterValue('effects.delay.feedback', params.effects.delay.feedback, true); updateParameterValue('effects.delay.level', params.effects.delay.level, true); updateParameterValue('effects.reverb.level', params.effects.reverb.level, true); updateParameterValue('masterVolume', params.masterVolume, true); if (audioContext.state === 'running') { isAudioResumed = true; masterGain.gain.value = params.masterVolume; } else { isAudioResumed = false; console.log("Context suspended."); } } catch (e) { console.error("Audio Init Error:", e); isAudioInitialized = false; isAudioResumed = false; alert("Audio Init Error: " + e.message); }
-    }
-
-    // ----- DRUM VOICE TRIGGERING -----
-    function triggerDrumSound(voiceIndex, playTime = audioContext.currentTime) { // (unchanged)
-        if (!isAudioInitialized || !audioContext) return; const voiceParams = params.voices[voiceIndex]; const waveType = WAVEFORMS[voiceParams.wave]; const now = playTime; const env = voiceParams.env; const voiceLevel = voiceParams.level; const voiceCutoff = voiceParams.cutoff; let sourceNode; const sourceGain = audioContext.createGain(); const levelGain = audioContext.createGain(); const filterNode = audioContext.createBiquadFilter(); const envelopeGain = audioContext.createGain(); filterNode.type = 'highpass'; filterNode.frequency.setValueAtTime(voiceCutoff, now); filterNode.Q.setValueAtTime(1, now); levelGain.gain.setValueAtTime(voiceLevel, now); const nodesToStore = { levelGain: levelGain, filterNode: filterNode, envGain: envelopeGain }; if (waveType === 'noise') { sourceNode = audioContext.createBufferSource(); sourceNode.buffer = noiseBuffer; sourceNode.loop = false; nodesToStore.noise = sourceNode; } else { sourceNode = audioContext.createOscillator(); sourceNode.type = waveType; sourceNode.frequency.setValueAtTime(voiceParams.pitch, now); nodesToStore.osc = sourceNode; } activeSources[voiceIndex].push(nodesToStore); sourceNode.connect(sourceGain); sourceGain.connect(levelGain); levelGain.connect(filterNode); filterNode.connect(envelopeGain); envelopeGain.connect(effectsInput); sourceGain.gain.value = 1; const peakLevel = 1.0; const sustainLevel = Math.max(0.0001, env.sustain * peakLevel); const attackTime = Math.max(0.001, env.attack); const decayTime = Math.max(0.001, env.decay); const releaseTime = Math.max(0.001, env.release); const totalDuration = attackTime + decayTime + releaseTime; envelopeGain.gain.cancelScheduledValues(now); envelopeGain.gain.setValueAtTime(0, now); envelopeGain.gain.linearRampToValueAtTime(peakLevel, now + attackTime); envelopeGain.gain.linearRampToValueAtTime(sustainLevel, now + attackTime + decayTime); envelopeGain.gain.setValueAtTime(sustainLevel, now + attackTime + decayTime); envelopeGain.gain.linearRampToValueAtTime(0.00001, now + totalDuration); sourceNode.start(now); try { if (sourceNode instanceof AudioBufferSourceNode || sourceNode instanceof OscillatorNode) { sourceNode.stop(now + totalDuration + 0.05); } } catch (e) { /* Ignore */ }
-    }
-
-    // ----- UI UPDATE FUNCTIONS -----
-    // (updateKnobVisual - unchanged)
-    function updateKnobVisual(knob, valueForRotation, actualAudioValue) { knob.dataset.actualValue = typeof actualAudioValue === 'number' ? actualAudioValue.toFixed(5) : String(actualAudioValue); const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null; let percentage = Math.max(0, Math.min(1, valueForRotation)); if (steps) { const numSteps = steps.length; const stepIndex = numSteps > 1 ? Math.round(percentage * (numSteps - 1)) : 0; if (knob.id.includes('-wave')) { const voiceIndex = parseInt(knob.id.match(/v(\d+)-/)[1]); if (waveformIndicators[voiceIndex]) { waveformIndicators[voiceIndex].textContent = WAVEFORM_INDICATORS[stepIndex] || '?'; } } } else { updateKnobValueDisplay(knob, actualAudioValue); } const rotation = -135 + (percentage * 270); knob.style.transform = `rotate(${rotation}deg)`; }
-
-    function updateParameterValue(paramPath, value, forceUpdate = false) { // (unchanged)
-        const parts = paramPath.split('.'); let currentParamObj = params; try { for (let i = 0; i < parts.length - 1; i++) { if (!currentParamObj[parts[i]]) currentParamObj[parts[i]] = {}; currentParamObj = currentParamObj[parts[i]]; } const finalKey = parts[parts.length - 1]; if (typeof value === 'string' && !isNaN(parseFloat(value))) { value = parseFloat(value); } currentParamObj[finalKey] = value; } catch (e) { console.error("Error updating internal params:", paramPath, value, e); return; } if (isAudioInitialized && (isAudioResumed || forceUpdate) && audioContext) { const now = audioContext.currentTime; const rampTime = 0.01; try { if (paramPath === 'masterVolume' && masterGain) { masterGain.gain.setTargetAtTime(value, now, rampTime); } else if (paramPath === 'effects.distortion.amount' && distortion && distortionPreGain) { const preGainValue = 1 + (value / 100) * 4; distortionPreGain.gain.setTargetAtTime(preGainValue, now, rampTime); distortion.curve = makeDistortionCurve(value, audioContext); distortion.oversample = value > 15 ? '4x' : (value > 5 ? '2x' : 'none'); } else if (paramPath === 'effects.delay.time' && delay) { delay.delayTime.setTargetAtTime(value, now, rampTime); } else if (paramPath === 'effects.delay.feedback' && delayFeedbackGain) { delayFeedbackGain.gain.setTargetAtTime(value, now, rampTime); } else if (paramPath === 'effects.delay.level' && delayWetGain) { delayWetGain.gain.setTargetAtTime(value, now, rampTime); } else if (paramPath === 'effects.reverb.level' && reverbWetGain) { reverbWetGain.gain.setTargetAtTime(value, now, rampTime); } } catch (e) { console.error(`Error setting AudioNode param ${paramPath}:`, e, "Value:", value); } }
-    }
-    function updateParameterFromKnob(knob, newValue, forceUpdate = false) { // (unchanged)
-        const paramPath = knob.dataset.param; const min = parseFloat(knob.dataset.min); const max = parseFloat(knob.dataset.max); const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null; const isLog = knob.dataset.curve === 'log'; let uiValue = newValue; let actualAudioValue; let percentageForVisual = 0.5; if (steps) { const stepIndex = Math.max(0, Math.min(steps.length - 1, Math.round(parseFloat(newValue)))); uiValue = stepIndex; actualAudioValue = stepIndex; knob.dataset.value = uiValue; percentageForVisual = steps.length > 1 ? stepIndex / (steps.length - 1) : 0.5; } else { const numericValue = parseFloat(newValue); uiValue = Math.max(min, Math.min(max, numericValue)); actualAudioValue = uiValue; knob.dataset.value = uiValue.toFixed(5); if (isLog && min > 0) { if (uiValue <= min) percentageForVisual = 0; else if (uiValue >= max) percentageForVisual = 1; else percentageForVisual = Math.log(uiValue / min) / Math.log(max / min); } else { const range = max - min; percentageForVisual = range > 0 ? (actualAudioValue - min) / range : 0.5; } } percentageForVisual = Math.max(0, Math.min(1, isNaN(percentageForVisual) ? 0.5 : percentageForVisual)); updateKnobVisual(knob, percentageForVisual, actualAudioValue); updateParameterValue(paramPath, actualAudioValue, forceUpdate);
-    }
-    function updateAllKnobs(forceUpdate = false) { // (unchanged)
-        if (!knobs) knobs = drumMachinePanel.querySelectorAll('.knob'); knobs.forEach(knob => { const initialValueAttr = knob.getAttribute('data-value'); const currentDatasetValue = knob.dataset.value; let valueToUse = (forceUpdate || currentDatasetValue === undefined || currentDatasetValue === null) ? initialValueAttr : currentDatasetValue; if (valueToUse !== null) { updateParameterFromKnob(knob, valueToUse, forceUpdate); } else { console.warn("Knob missing value:", knob.id); } if (!knob.dataset.steps) { const displayId = knob.id + '-value'; const displayElement = document.getElementById(displayId); if (displayElement && document.activeElement !== knob) { displayElement.style.display = 'none'; } } });
-    }
-
-    // ----- SEQUENCER LOGIC -----
-
-    function scheduleNotes(currentStep, currentTime) { // (unchanged)
-        sequencer.stepDuration = 60.0 / sequencer.tempo / 4.0; while (sequencer.nextStepTime < currentTime + sequencer.scheduleAheadTime) { const stepIndex = sequencer.currentStep; const stepTime = sequencer.nextStepTime; for (let voiceIndex = 0; voiceIndex < NUM_VOICES; voiceIndex++) { if (sequencer.steps[voiceIndex][stepIndex] === 1) { triggerDrumSound(voiceIndex, stepTime); } } updateStepIndicator(stepIndex); sequencer.nextStepTime += sequencer.stepDuration; sequencer.currentStep = (sequencer.currentStep + 1) % NUM_STEPS; }
-    }
-    function sequencerScheduler() { // (unchanged)
-        if (!sequencer.isPlaying) return; const currentTime = audioContext.currentTime; scheduleNotes(sequencer.currentStep, currentTime); sequencer.timerId = setTimeout(sequencerScheduler, sequencer.lookahead);
-    }
-    function playSequencer() { // (unchanged)
-        if (!isAudioInitialized || !isAudioResumed) { console.warn("Audio not ready, cannot start sequencer."); ensureAudioContextResumed().then(resumed => { if (resumed) playSequencer(); }); return; } if (sequencer.isPlaying) return; sequencer.isPlaying = true; sequencer.currentStep = 0; sequencer.nextStepTime = audioContext.currentTime + 0.05; sequencerScheduler(); playStopButton.textContent = "⏹"; playStopButton.classList.add("playing");
-    }
-    function stopSequencer() { // (unchanged)
-        if (!sequencer.isPlaying) return; sequencer.isPlaying = false; clearTimeout(sequencer.timerId); sequencer.timerId = null; playStopButton.textContent = "▶︎"; playStopButton.classList.remove("playing"); clearStepIndicators();
-    }
-    function togglePlayStop() { // (unchanged)
-        if (sequencer.isPlaying) { stopSequencer(); } else { playSequencer(); }
-    }
-    function updateTempo(newTempo) { // (unchanged)
-        const clampedTempo = Math.max(30, Math.min(300, newTempo)); sequencer.tempo = clampedTempo; tempoInput.value = clampedTempo;
-    }
-    function resetSequencer() { // (unchanged)
-        stopSequencer(); for (let v = 0; v < NUM_VOICES; v++) { for (let s = 0; s < NUM_STEPS; s++) { sequencer.steps[v][s] = 0; stepButtons[v][s].classList.remove('active'); } } sequencer.currentStep = 0; clearStepIndicators(); console.log("Sequencer Reset.");
-    }
-
-    // --- NEW/MODIFIED: Step State Management ---
-    function getStepState(voiceIndex, stepIndex) {
-        return sequencer.steps[voiceIndex][stepIndex] === 1;
-    }
-
-    function setStepState(voiceIndex, stepIndex, isActive) {
-        const newState = isActive ? 1 : 0;
-        if (sequencer.steps[voiceIndex][stepIndex] !== newState) {
-            sequencer.steps[voiceIndex][stepIndex] = newState;
-            stepButtons[voiceIndex][stepIndex].classList.toggle('active', isActive);
+        // ----- UTILITY FUNCTIONS -----
+        // (createNoiseBuffer, makeDistortionCurve, createReverbImpulse, formatKnobValue, updateKnobValueDisplay - unchanged)
+        function createNoiseBuffer(context) {
+            const bufferSize = context.sampleRate * 2;
+            const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+            const output = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+            return buffer;
         }
-    }
-    // --- END NEW/MODIFIED ---
 
-    // --- Sequencer Visuals ---
-    function createSequencerGridUI() {
-        // Create Step Indicators (unchanged)
-        stepIndicatorRow.innerHTML = ''; stepIndicators = []; for (let i = 0; i < NUM_STEPS; i++) { const indicator = document.createElement('div'); indicator.classList.add('step-indicator'); indicator.id = `step-indicator-${i}`; stepIndicatorRow.appendChild(indicator); stepIndicators.push(indicator); }
+        function makeDistortionCurve(amount, context) {
+            if (!context) return null;
+            const k = Math.max(0, amount);
+            const n_samples = 44100;
+            const curve = new Float32Array(n_samples);
+            const curveSharpness = 1 + (k / 100) * 5;
+            for (let i = 0; i < n_samples; ++i) {
+                let x = i * 2 / n_samples - 1;
+                curve[i] = Math.tanh(x * curveSharpness);
+            }
+            return curve;
+        }
 
-        // Create Step Buttons (Remove individual click listener)
-        sequencerGrid.innerHTML = ''; stepButtons = [];
-        for (let v = 0; v < NUM_VOICES; v++) {
-            stepButtons[v] = [];
-            for (let s = 0; s < NUM_STEPS; s++) {
-                const button = document.createElement('button');
-                button.classList.add('step-button');
-                button.dataset.voice = v;
-                button.dataset.step = s;
-                // REMOVED: button.addEventListener('click', () => toggleStep(v, s));
-                sequencerGrid.appendChild(button);
-                stepButtons[v].push(button);
+        function createReverbImpulse(context, duration = 0.8, decay = 1) {
+            const sampleRate = context.sampleRate;
+            const length = sampleRate * duration;
+            const impulse = context.createBuffer(2, length, sampleRate);
+            const impulseL = impulse.getChannelData(0);
+            const impulseR = impulse.getChannelData(1);
+            for (let i = 0; i < length; i++) {
+                const n = length - i;
+                impulseL[i] = (Math.random() * 2 - 1) * Math.pow(n / length, decay);
+                impulseR[i] = (Math.random() * 2 - 1) * Math.pow(n / length, decay);
+            }
+            return impulse;
+        }
+
+        function formatKnobValue(value, knobId) {
+            if (typeof value !== 'number' || !isFinite(value)) return '---';
+            if (knobId) {
+                if (knobId.includes('attack') || knobId.includes('decay') || knobId.includes('release') || knobId
+                    .includes('delay-time')) {
+                    return value < 1 ? (value * 1000).toFixed(0) + 'ms' : value.toFixed(2) + 's';
+                } else if (knobId.includes('pitch') || knobId.includes('cutoff')) {
+                    return value >= 1000 ? (value / 1000).toFixed(1) + 'k' : value.toFixed(0);
+                } else if (knobId.includes('level') || knobId.includes('feedback') || knobId.includes('sustain') ||
+                    knobId.includes('volume')) {
+                    return value.toFixed(2);
+                } else if (knobId.includes('distortion-amount')) {
+                    return value.toFixed(0);
+                }
+            }
+            return value.toFixed(2);
+        }
+
+        function updateKnobValueDisplay(knob, value) {
+            if (knob && !knob.dataset.steps) {
+                const displayId = knob.id + '-value';
+                const displayElement = document.getElementById(displayId);
+                if (displayElement) {
+                    displayElement.textContent = formatKnobValue(value, knob.id);
+                }
             }
         }
-    }
 
-    let lastIndicatorUpdate = { step: -1, timeoutId: null }; // (unchanged)
-    function updateStepIndicator(stepIndex) { if (lastIndicatorUpdate.timeoutId) { clearTimeout(lastIndicatorUpdate.timeoutId); if(lastIndicatorUpdate.step >= 0 && lastIndicatorUpdate.step < NUM_STEPS) { stepIndicators[lastIndicatorUpdate.step]?.classList.remove('active'); for(let v = 0; v < NUM_VOICES; v++){ stepButtons[v][lastIndicatorUpdate.step]?.classList.remove('playing'); } } } if(stepIndex >= 0 && stepIndex < NUM_STEPS) { stepIndicators[stepIndex]?.classList.add('active'); for(let v = 0; v < NUM_VOICES; v++){ stepButtons[v][stepIndex]?.classList.add('playing'); } } const indicatorOffDelay = (sequencer.stepDuration * 1000) * 0.8; lastIndicatorUpdate.step = stepIndex; lastIndicatorUpdate.timeoutId = setTimeout(() => { if(stepIndex >= 0 && stepIndex < NUM_STEPS) { stepIndicators[stepIndex]?.classList.remove('active'); for(let v = 0; v < NUM_VOICES; v++){ stepButtons[v][stepIndex]?.classList.remove('playing'); } } lastIndicatorUpdate.timeoutId = null; }, indicatorOffDelay); }
-    function clearStepIndicators() { if (lastIndicatorUpdate.timeoutId) { clearTimeout(lastIndicatorUpdate.timeoutId); lastIndicatorUpdate.timeoutId = null; } stepIndicators.forEach(ind => ind.classList.remove('active')); stepButtons.flat().forEach(btn => btn.classList.remove('playing')); lastIndicatorUpdate.step = -1; }
 
-    // ----- EVENT LISTENERS -----
-
-    // -- Keyboard Input (unchanged) --
-    document.addEventListener('keydown', async (e) => { if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return; if (e.code === 'Space') { e.preventDefault(); togglePlayStop(); return; } const voiceIndex = keyToVoiceIndex[e.code]; if (voiceIndex !== undefined) { e.preventDefault(); let canPlay = isAudioResumed; if (!canPlay && isAudioInitialized) canPlay = await ensureAudioContextResumed(); if (canPlay) { triggerDrumSound(voiceIndex, audioContext.currentTime); const light = indicatorLights[voiceIndex]; if (light) { light.classList.add('active'); setTimeout(() => light.classList.remove('active'), 100); } } else { console.warn("Audio context not running for manual trigger."); } return; } if (document.activeElement && document.activeElement.classList.contains('knob')) { const focusedKnob = document.activeElement; if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); handleKnobArrowKey(focusedKnob, e.key === 'ArrowLeft' ? -1 : 1, e.shiftKey); } else if (e.key >= '0' && e.key <= '9') { e.preventDefault(); handleKnobNumberKey(focusedKnob, parseInt(e.key, 10)); } } });
-
-     // --- Knob Keyboard Control Helpers (unchanged) ---
-      function getKnobPercentage(knob){const min=parseFloat(knob.dataset.min);const max=parseFloat(knob.dataset.max);const steps=knob.dataset.steps?knob.dataset.steps.split(','):null;const isLog=knob.dataset.curve==='log'&&min>0;let currentValueStr=knob.dataset.value;let percentage=0.5;if(currentValueStr===undefined||currentValueStr===null)return 0.5;if(steps){const numSteps=steps.length;const stepIndex=parseInt(currentValueStr);percentage=numSteps>1?stepIndex/(numSteps-1):0.5;}else{let currentValue=parseFloat(knob.dataset.actualValue||currentValueStr);if(isLog){if(currentValue<=min)percentage=0;else if(currentValue>=max)percentage=1;else percentage=Math.log(currentValue/min)/Math.log(max/min);}else{const range=max-min;percentage=range>0?(currentValue-min)/range:0.5;}}return Math.max(0,Math.min(1,isNaN(percentage)?0.5:percentage));}
-      function handleKnobArrowKey(knob,direction,isShift){const steps=knob.dataset.steps?knob.dataset.steps.split(','):null;const min=parseFloat(knob.dataset.min);const max=parseFloat(knob.dataset.max);const isLog=knob.dataset.curve==='log'&&min>0;let currentPercentage=getKnobPercentage(knob);let newValue;if(steps){const numSteps=steps.length;let currentStepIndex=Math.round(currentPercentage*(numSteps-1));let stepChange=direction*(isShift?2:1);newValue=Math.max(0,Math.min(numSteps-1,currentStepIndex+stepChange));}else{let percentageChange=direction*(isShift?0.1:0.01);let newPercentage=Math.max(0,Math.min(1,currentPercentage+percentageChange));if(isLog){newValue=min*Math.pow(max/min,newPercentage);}else{const range=max-min;newValue=min+newPercentage*range;}newValue=Math.max(min,Math.min(max,newValue));}updateParameterFromKnob(knob,newValue);}
-      function handleKnobNumberKey(knob,number){const steps=knob.dataset.steps?knob.dataset.steps.split(','):null;const min=parseFloat(knob.dataset.min);const max=parseFloat(knob.dataset.max);const isLog=knob.dataset.curve==='log'&&min>0;let targetValue;if(steps){const numSteps=steps.length;if(numSteps===0)return;let targetIndex=(number===0)?numSteps-1:number-1;targetValue=Math.max(0,Math.min(numSteps-1,targetIndex));}else{let currentActualValue=parseFloat(knob.dataset.actualValue||knob.dataset.value||'0');const epsilon=1e-7;let targetPercentage=(number===0)?(Math.abs(currentActualValue-min)<epsilon?1.0:0.0):number/10.0;if(isLog){targetValue=min*Math.pow(max/min,targetPercentage);}else{const range=max-min;targetValue=min+targetPercentage*range;}targetValue=Math.max(min,Math.min(max,targetValue));}updateParameterFromKnob(knob,targetValue);}
-
-    // -- Mouse Input for Knobs --
-    // (isDragging, dragKnob, startY, startValuePercentage, handleKnobMouseMove, stopDrag, setupKnobListeners remain the same)
-    let isDragging=false;let dragKnob=null;let startY=0;let startValuePercentage=0; function handleKnobMouseMove(e){if(!isDragging||!dragKnob)return;e.preventDefault();const currentY=e.clientY;const deltaY=startY-currentY;const steps=dragKnob.dataset.steps?dragKnob.dataset.steps.split(','):null;const min=parseFloat(dragKnob.dataset.min);const max=parseFloat(dragKnob.dataset.max);const isLog=dragKnob.dataset.curve==='log'&&min>0;let newValue;if(steps){const pixelsPerStep=20;const totalSteps=steps.length;if(totalSteps<=1)return;const totalDragPixelsForRange=pixelsPerStep*(totalSteps-1);const percentageChange=totalDragPixelsForRange>0?(deltaY/totalDragPixelsForRange):0;let newPercentage=Math.max(0,Math.min(1,startValuePercentage+percentageChange));newValue=Math.round(newPercentage*(totalSteps-1));}else{const dragRangePixels=150;const deltaPercentage=deltaY/dragRangePixels;let newPercentage=Math.max(0,Math.min(1,startValuePercentage+deltaPercentage));if(isLog){const epsilon=1e-9;const clampedPercentage=Math.max(epsilon,Math.min(1-epsilon,newPercentage));if(min>0&&max>min)newValue=min*Math.pow(max/min,clampedPercentage);else newValue=(newPercentage>0.5)?max:min;}else{const range=max-min;newValue=min+newPercentage*range;}newValue=Math.max(min,Math.min(max,newValue));}let currentValueInDataStr=dragKnob.dataset.value;const tolerance=1e-6;if(steps){if(newValue!==parseInt(currentValueInDataStr)){updateParameterFromKnob(dragKnob,newValue);}}else{if(Math.abs(newValue-parseFloat(currentValueInDataStr))>tolerance){updateParameterFromKnob(dragKnob,newValue);}}}
-    function stopDrag(){if(isDragging&&dragKnob){dragKnob.closest('.control-group')?.classList.remove('interacting');}if(isDragging){isDragging=false;dragKnob=null;document.body.classList.remove('dragging');document.removeEventListener('mousemove',handleKnobMouseMove);document.removeEventListener('mouseup',stopDrag);document.removeEventListener('mouseleave',stopDrag);}} function setupKnobListeners(){if(!knobs)knobs=drumMachinePanel.querySelectorAll('.knob');knobs.forEach(knob=>{const controlGroup=knob.closest('.control-group');const isStepped=knob.hasAttribute('data-steps');const valueDisplayId=knob.id+'-value';const valueDisplay=document.getElementById(valueDisplayId);if(!isStepped&&valueDisplay){knob.addEventListener('focus',()=>{const currentVal=parseFloat(knob.dataset.actualValue||knob.dataset.value||'0');updateKnobValueDisplay(knob,currentVal);valueDisplay.style.display='inline-block';});knob.addEventListener('blur',()=>{if(!isDragging||dragKnob!==knob){valueDisplay.style.display='none';}controlGroup?.classList.remove('interacting');});}knob.addEventListener('mousedown',async(e)=>{let canInteract=isAudioResumed;if(!canInteract&&isAudioInitialized)canInteract=await ensureAudioContextResumed();if(!isAudioInitialized||!canInteract)return;e.preventDefault();isDragging=true;dragKnob=knob;startY=e.clientY;startValuePercentage=getKnobPercentage(knob);knob.focus();controlGroup?.classList.add('interacting');if(!isStepped&&valueDisplay){const currentVal=parseFloat(knob.dataset.actualValue||knob.dataset.value||'0');updateKnobValueDisplay(knob,currentVal);valueDisplay.style.display='inline-block';}document.body.classList.add('dragging');document.addEventListener('mousemove',handleKnobMouseMove);document.addEventListener('mouseup',stopDrag);document.addEventListener('mouseleave',stopDrag);});knob.addEventListener('dblclick',async(e)=>{let canInteract=isAudioResumed;if(!canInteract&&isAudioInitialized)canInteract=await ensureAudioContextResumed();if(!isAudioInitialized||!canInteract)return;const defaultValueAttr=knob.getAttribute('data-value');if(defaultValueAttr!==null){updateParameterFromKnob(knob,defaultValueAttr);if(!isStepped&&valueDisplay){const defaultVal=parseFloat(defaultValueAttr);updateKnobValueDisplay(knob,defaultVal);}}});});}
-
-    // --- Sequencer UI Event Listeners ---
-
-    // NEW: Handlers for step drag functionality
-    function handleSeqGridMouseDown(e) {
-        if (!e.target.classList.contains('step-button')) return;
-
-        e.preventDefault(); // Prevent text selection/dragging image ghost
-        isDraggingSeqStep = true;
-
-        const button = e.target;
-        const voiceIndex = parseInt(button.dataset.voice);
-        const stepIndex = parseInt(button.dataset.step);
-
-        // Toggle the clicked step first
-        const initialState = getStepState(voiceIndex, stepIndex);
-        const newState = !initialState;
-        setStepState(voiceIndex, stepIndex, newState);
-
-        // Determine drag mode
-        dragSeqStepMode = newState ? 'activate' : 'deactivate';
-        dragSeqStepVoice = voiceIndex;
-
-        // Add listeners to the document to track mouse movement anywhere
-        document.addEventListener('mousemove', handleSeqGridMouseMove);
-        document.addEventListener('mouseup', handleSeqGridMouseUp, { once: true }); // Remove after first mouseup
-    }
-
-    function handleSeqGridMouseMove(e) {
-        if (!isDraggingSeqStep) return;
-
-        // Check if the element being hovered over is a step button
-        const targetElement = document.elementFromPoint(e.clientX, e.clientY);
-        if (!targetElement || !targetElement.classList.contains('step-button')) {
-            return; // Not hovering over a step button
+        // ----- AUDIO CONTEXT & INITIALIZATION -----
+        async function ensureAudioContextResumed() { // (unchanged)
+            if (!audioContext) return false;
+            if (audioContext.state === 'running') {
+                if (!isAudioResumed) {
+                    isAudioResumed = true;
+                    masterGain.gain.linearRampToValueAtTime(params.masterVolume, audioContext.currentTime + 0.05);
+                }
+                return true;
+            }
+            if (audioContext.state === 'suspended') {
+                try {
+                    await audioContext.resume();
+                    if (audioContext.state === 'running') {
+                        console.log("AudioContext Resumed.");
+                        isAudioResumed = true;
+                        masterGain.gain.linearRampToValueAtTime(params.masterVolume, audioContext.currentTime +
+                            0.05);
+                        return true;
+                    } else {
+                        isAudioResumed = false;
+                        return false;
+                    }
+                } catch (e) {
+                    console.error("Error resuming:", e);
+                    isAudioResumed = false;
+                    return false;
+                }
+            }
+            return false;
         }
-
-        const button = targetElement;
-        const voiceIndex = parseInt(button.dataset.voice);
-        const stepIndex = parseInt(button.dataset.step);
-
-        // Only apply if it's in the same voice row
-        if (voiceIndex === dragSeqStepVoice) {
-            const currentState = getStepState(voiceIndex, stepIndex);
-            const shouldActivate = dragSeqStepMode === 'activate';
-
-            // Apply the drag mode only if the button is not already in the desired state
-            if (shouldActivate && !currentState) {
-                setStepState(voiceIndex, stepIndex, true);
-            } else if (!shouldActivate && currentState) {
-                setStepState(voiceIndex, stepIndex, false);
+        async function initAudio() { // (unchanged)
+            if (isAudioInitialized) return;
+            console.log("Initializing AudioContext...");
+            try {
+                audioContext = new(window.AudioContext || window.webkitAudioContext)();
+                if (!audioContext) throw new Error("Web Audio API not supported.");
+                isAudioInitialized = true;
+                console.log("Initial State:", audioContext.state);
+                masterGain = audioContext.createGain();
+                masterGain.gain.value = 0;
+                effectsInput = audioContext.createGain();
+                distortionPreGain = audioContext.createGain();
+                distortion = audioContext.createWaveShaper();
+                delay = audioContext.createDelay(2.0);
+                delayFeedbackGain = audioContext.createGain();
+                delayWetGain = audioContext.createGain();
+                reverb = audioContext.createConvolver();
+                reverbWetGain = audioContext.createGain();
+                noiseBuffer = createNoiseBuffer(audioContext);
+                reverb.buffer = createReverbImpulse(audioContext);
+                effectsInput.connect(distortionPreGain);
+                distortionPreGain.connect(distortion);
+                distortion.connect(masterGain);
+                distortion.connect(delay);
+                delay.connect(delayFeedbackGain);
+                delayFeedbackGain.connect(delay);
+                delay.connect(delayWetGain);
+                delayWetGain.connect(masterGain);
+                distortion.connect(reverb);
+                reverb.connect(reverbWetGain);
+                reverbWetGain.connect(masterGain);
+                masterGain.connect(audioContext.destination);
+                updateParameterValue('effects.distortion.amount', params.effects.distortion.amount, true);
+                updateParameterValue('effects.delay.time', params.effects.delay.time, true);
+                updateParameterValue('effects.delay.feedback', params.effects.delay.feedback, true);
+                updateParameterValue('effects.delay.level', params.effects.delay.level, true);
+                updateParameterValue('effects.reverb.level', params.effects.reverb.level, true);
+                updateParameterValue('masterVolume', params.masterVolume, true);
+                if (audioContext.state === 'running') {
+                    isAudioResumed = true;
+                    masterGain.gain.value = params.masterVolume;
+                } else {
+                    isAudioResumed = false;
+                    console.log("Context suspended.");
+                }
+            } catch (e) {
+                console.error("Audio Init Error:", e);
+                isAudioInitialized = false;
+                isAudioResumed = false;
+                alert("Audio Init Error: " + e.message);
             }
         }
-    }
 
-    function handleSeqGridMouseUp(e) {
-        if (isDraggingSeqStep) {
-            isDraggingSeqStep = false;
-            dragSeqStepMode = null;
-            dragSeqStepVoice = -1;
-            document.removeEventListener('mousemove', handleSeqGridMouseMove);
-            // The mouseup listener on document is already set to {once: true}
+        // ----- DRUM VOICE TRIGGERING -----
+        function triggerDrumSound(voiceIndex, playTime = audioContext.currentTime) { // (unchanged)
+            if (!isAudioInitialized || !audioContext) return;
+            const voiceParams = params.voices[voiceIndex];
+            const waveType = WAVEFORMS[voiceParams.wave];
+            const now = playTime;
+            const env = voiceParams.env;
+            const voiceLevel = voiceParams.level;
+            const voiceCutoff = voiceParams.cutoff;
+            let sourceNode;
+            const sourceGain = audioContext.createGain();
+            const levelGain = audioContext.createGain();
+            const filterNode = audioContext.createBiquadFilter();
+            const envelopeGain = audioContext.createGain();
+            filterNode.type = 'highpass';
+            filterNode.frequency.setValueAtTime(voiceCutoff, now);
+            filterNode.Q.setValueAtTime(1, now);
+            levelGain.gain.setValueAtTime(voiceLevel, now);
+            const nodesToStore = {
+                levelGain: levelGain,
+                filterNode: filterNode,
+                envGain: envelopeGain
+            };
+            if (waveType === 'noise') {
+                sourceNode = audioContext.createBufferSource();
+                sourceNode.buffer = noiseBuffer;
+                sourceNode.loop = false;
+                nodesToStore.noise = sourceNode;
+            } else {
+                sourceNode = audioContext.createOscillator();
+                sourceNode.type = waveType;
+                sourceNode.frequency.setValueAtTime(voiceParams.pitch, now);
+                nodesToStore.osc = sourceNode;
+            }
+            activeSources[voiceIndex].push(nodesToStore);
+            sourceNode.connect(sourceGain);
+            sourceGain.connect(levelGain);
+            levelGain.connect(filterNode);
+            filterNode.connect(envelopeGain);
+            envelopeGain.connect(effectsInput);
+            sourceGain.gain.value = 1;
+            const peakLevel = 1.0;
+            const sustainLevel = Math.max(0.0001, env.sustain * peakLevel);
+            const attackTime = Math.max(0.001, env.attack);
+            const decayTime = Math.max(0.001, env.decay);
+            const releaseTime = Math.max(0.001, env.release);
+            const totalDuration = attackTime + decayTime + releaseTime;
+            envelopeGain.gain.cancelScheduledValues(now);
+            envelopeGain.gain.setValueAtTime(0, now);
+            envelopeGain.gain.linearRampToValueAtTime(peakLevel, now + attackTime);
+            envelopeGain.gain.linearRampToValueAtTime(sustainLevel, now + attackTime + decayTime);
+            envelopeGain.gain.setValueAtTime(sustainLevel, now + attackTime + decayTime);
+            envelopeGain.gain.linearRampToValueAtTime(0.00001, now + totalDuration);
+            sourceNode.start(now);
+            try {
+                if (sourceNode instanceof AudioBufferSourceNode || sourceNode instanceof OscillatorNode) {
+                    sourceNode.stop(now + totalDuration + 0.05);
+                }
+            } catch (e) {
+                /* Ignore */
+            }
         }
-    }
-    // --- END NEW HANDLERS ---
 
-    function setupSequencerListeners() {
-        playStopButton.addEventListener('click', togglePlayStop);
-        resetButton.addEventListener('click', resetSequencer);
-        tempoInput.addEventListener('change', (e) => {
-            const newTempo = parseFloat(e.target.value);
-            if (!isNaN(newTempo)) { updateTempo(newTempo); }
-            else { tempoInput.value = sequencer.tempo; }
+        // ----- UI UPDATE FUNCTIONS -----
+        // (updateKnobVisual - unchanged)
+        function updateKnobVisual(knob, valueForRotation, actualAudioValue) {
+            knob.dataset.actualValue = typeof actualAudioValue === 'number' ? actualAudioValue.toFixed(5) : String(
+                actualAudioValue);
+            const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null;
+            let percentage = Math.max(0, Math.min(1, valueForRotation));
+            if (steps) {
+                const numSteps = steps.length;
+                const stepIndex = numSteps > 1 ? Math.round(percentage * (numSteps - 1)) : 0;
+                if (knob.id.includes('-wave')) {
+                    const voiceIndex = parseInt(knob.id.match(/v(\d+)-/)[1]);
+                    if (waveformIndicators[voiceIndex]) {
+                        waveformIndicators[voiceIndex].textContent = WAVEFORM_INDICATORS[stepIndex] || '?';
+                    }
+                }
+            } else {
+                updateKnobValueDisplay(knob, actualAudioValue);
+            }
+            const rotation = -135 + (percentage * 270);
+            knob.style.transform = `rotate(${rotation}deg)`;
+        }
+
+        function updateParameterValue(paramPath, value, forceUpdate = false) { // (unchanged)
+            const parts = paramPath.split('.');
+            let currentParamObj = params;
+            try {
+                for (let i = 0; i < parts.length - 1; i++) {
+                    if (!currentParamObj[parts[i]]) currentParamObj[parts[i]] = {};
+                    currentParamObj = currentParamObj[parts[i]];
+                }
+                const finalKey = parts[parts.length - 1];
+                if (typeof value === 'string' && !isNaN(parseFloat(value))) {
+                    value = parseFloat(value);
+                }
+                currentParamObj[finalKey] = value;
+            } catch (e) {
+                console.error("Error updating internal params:", paramPath, value, e);
+                return;
+            }
+            if (isAudioInitialized && (isAudioResumed || forceUpdate) && audioContext) {
+                const now = audioContext.currentTime;
+                const rampTime = 0.01;
+                try {
+                    if (paramPath === 'masterVolume' && masterGain) {
+                        masterGain.gain.setTargetAtTime(value, now, rampTime);
+                    } else if (paramPath === 'effects.distortion.amount' && distortion && distortionPreGain) {
+                        const preGainValue = 1 + (value / 100) * 4;
+                        distortionPreGain.gain.setTargetAtTime(preGainValue, now, rampTime);
+                        distortion.curve = makeDistortionCurve(value, audioContext);
+                        distortion.oversample = value > 15 ? '4x' : (value > 5 ? '2x' : 'none');
+                    } else if (paramPath === 'effects.delay.time' && delay) {
+                        delay.delayTime.setTargetAtTime(value, now, rampTime);
+                    } else if (paramPath === 'effects.delay.feedback' && delayFeedbackGain) {
+                        delayFeedbackGain.gain.setTargetAtTime(value, now, rampTime);
+                    } else if (paramPath === 'effects.delay.level' && delayWetGain) {
+                        delayWetGain.gain.setTargetAtTime(value, now, rampTime);
+                    } else if (paramPath === 'effects.reverb.level' && reverbWetGain) {
+                        reverbWetGain.gain.setTargetAtTime(value, now, rampTime);
+                    }
+                } catch (e) {
+                    console.error(`Error setting AudioNode param ${paramPath}:`, e, "Value:", value);
+                }
+            }
+        }
+
+        function updateParameterFromKnob(knob, newValue, forceUpdate = false) { // (unchanged)
+            const paramPath = knob.dataset.param;
+            const min = parseFloat(knob.dataset.min);
+            const max = parseFloat(knob.dataset.max);
+            const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null;
+            const isLog = knob.dataset.curve === 'log';
+            let uiValue = newValue;
+            let actualAudioValue;
+            let percentageForVisual = 0.5;
+            if (steps) {
+                const stepIndex = Math.max(0, Math.min(steps.length - 1, Math.round(parseFloat(newValue))));
+                uiValue = stepIndex;
+                actualAudioValue = stepIndex;
+                knob.dataset.value = uiValue;
+                percentageForVisual = steps.length > 1 ? stepIndex / (steps.length - 1) : 0.5;
+            } else {
+                const numericValue = parseFloat(newValue);
+                uiValue = Math.max(min, Math.min(max, numericValue));
+                actualAudioValue = uiValue;
+                knob.dataset.value = uiValue.toFixed(5);
+                if (isLog && min > 0) {
+                    if (uiValue <= min) percentageForVisual = 0;
+                    else if (uiValue >= max) percentageForVisual = 1;
+                    else percentageForVisual = Math.log(uiValue / min) / Math.log(max / min);
+                } else {
+                    const range = max - min;
+                    percentageForVisual = range > 0 ? (actualAudioValue - min) / range : 0.5;
+                }
+            }
+            percentageForVisual = Math.max(0, Math.min(1, isNaN(percentageForVisual) ? 0.5 : percentageForVisual));
+            updateKnobVisual(knob, percentageForVisual, actualAudioValue);
+            updateParameterValue(paramPath, actualAudioValue, forceUpdate);
+        }
+
+        function updateAllKnobs(forceUpdate = false) { // (unchanged)
+            if (!knobs) knobs = drumMachinePanel.querySelectorAll('.knob');
+            knobs.forEach(knob => {
+                const initialValueAttr = knob.getAttribute('data-value');
+                const currentDatasetValue = knob.dataset.value;
+                let valueToUse = (forceUpdate || currentDatasetValue === undefined || currentDatasetValue ===
+                    null) ? initialValueAttr : currentDatasetValue;
+                if (valueToUse !== null) {
+                    updateParameterFromKnob(knob, valueToUse, forceUpdate);
+                } else {
+                    console.warn("Knob missing value:", knob.id);
+                }
+                if (!knob.dataset.steps) {
+                    const displayId = knob.id + '-value';
+                    const displayElement = document.getElementById(displayId);
+                    if (displayElement && document.activeElement !== knob) {
+                        displayElement.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // ----- SEQUENCER LOGIC -----
+
+        function scheduleNotes(currentStep, currentTime) { // (unchanged)
+            sequencer.stepDuration = 60.0 / sequencer.tempo / 4.0;
+            while (sequencer.nextStepTime < currentTime + sequencer.scheduleAheadTime) {
+                const stepIndex = sequencer.currentStep;
+                const stepTime = sequencer.nextStepTime;
+                for (let voiceIndex = 0; voiceIndex < NUM_VOICES; voiceIndex++) {
+                    if (sequencer.steps[voiceIndex][stepIndex] === 1) {
+                        triggerDrumSound(voiceIndex, stepTime);
+                    }
+                }
+                updateStepIndicator(stepIndex);
+                sequencer.nextStepTime += sequencer.stepDuration;
+                sequencer.currentStep = (sequencer.currentStep + 1) % NUM_STEPS;
+            }
+        }
+
+        function sequencerScheduler() { // (unchanged)
+            if (!sequencer.isPlaying) return;
+            const currentTime = audioContext.currentTime;
+            scheduleNotes(sequencer.currentStep, currentTime);
+            sequencer.timerId = setTimeout(sequencerScheduler, sequencer.lookahead);
+        }
+
+        function playSequencer() { // (unchanged)
+            if (!isAudioInitialized || !isAudioResumed) {
+                console.warn("Audio not ready, cannot start sequencer.");
+                ensureAudioContextResumed().then(resumed => {
+                    if (resumed) playSequencer();
+                });
+                return;
+            }
+            if (sequencer.isPlaying) return;
+            sequencer.isPlaying = true;
+            sequencer.currentStep = 0;
+            sequencer.nextStepTime = audioContext.currentTime + 0.05;
+            sequencerScheduler();
+            playStopButton.textContent = "⏹";
+            playStopButton.classList.add("playing");
+        }
+
+        function stopSequencer() { // (unchanged)
+            if (!sequencer.isPlaying) return;
+            sequencer.isPlaying = false;
+            clearTimeout(sequencer.timerId);
+            sequencer.timerId = null;
+            playStopButton.textContent = "▶︎";
+            playStopButton.classList.remove("playing");
+            clearStepIndicators();
+        }
+
+        function togglePlayStop() { // (unchanged)
+            if (sequencer.isPlaying) {
+                stopSequencer();
+            } else {
+                playSequencer();
+            }
+        }
+
+        function updateTempo(newTempo) { // (unchanged)
+            const clampedTempo = Math.max(30, Math.min(300, newTempo));
+            sequencer.tempo = clampedTempo;
+            tempoInput.value = clampedTempo;
+        }
+
+        function resetSequencer() { // (unchanged)
+            stopSequencer();
+            for (let v = 0; v < NUM_VOICES; v++) {
+                for (let s = 0; s < NUM_STEPS; s++) {
+                    sequencer.steps[v][s] = 0;
+                    stepButtons[v][s].classList.remove('active');
+                }
+            }
+            sequencer.currentStep = 0;
+            clearStepIndicators();
+            console.log("Sequencer Reset.");
+        }
+
+        // --- NEW/MODIFIED: Step State Management ---
+        function getStepState(voiceIndex, stepIndex) {
+            return sequencer.steps[voiceIndex][stepIndex] === 1;
+        }
+
+        function setStepState(voiceIndex, stepIndex, isActive) {
+            const newState = isActive ? 1 : 0;
+            if (sequencer.steps[voiceIndex][stepIndex] !== newState) {
+                sequencer.steps[voiceIndex][stepIndex] = newState;
+                stepButtons[voiceIndex][stepIndex].classList.toggle('active', isActive);
+            }
+        }
+        // --- END NEW/MODIFIED ---
+
+        // --- Sequencer Visuals ---
+        function createSequencerGridUI() {
+            // Create Step Indicators (unchanged)
+            stepIndicatorRow.innerHTML = '';
+            stepIndicators = [];
+            for (let i = 0; i < NUM_STEPS; i++) {
+                const indicator = document.createElement('div');
+                indicator.classList.add('step-indicator');
+                indicator.id = `step-indicator-${i}`;
+                stepIndicatorRow.appendChild(indicator);
+                stepIndicators.push(indicator);
+            }
+
+            // Create Step Buttons (Remove individual click listener)
+            sequencerGrid.innerHTML = '';
+            stepButtons = [];
+            for (let v = 0; v < NUM_VOICES; v++) {
+                stepButtons[v] = [];
+                for (let s = 0; s < NUM_STEPS; s++) {
+                    const button = document.createElement('button');
+                    button.classList.add('step-button');
+                    button.dataset.voice = v;
+                    button.dataset.step = s;
+                    // REMOVED: button.addEventListener('click', () => toggleStep(v, s));
+                    sequencerGrid.appendChild(button);
+                    stepButtons[v].push(button);
+                }
+            }
+        }
+
+        let lastIndicatorUpdate = {
+            step: -1,
+            timeoutId: null
+        }; // (unchanged)
+        function updateStepIndicator(stepIndex) {
+            if (lastIndicatorUpdate.timeoutId) {
+                clearTimeout(lastIndicatorUpdate.timeoutId);
+                if (lastIndicatorUpdate.step >= 0 && lastIndicatorUpdate.step < NUM_STEPS) {
+                    stepIndicators[lastIndicatorUpdate.step] ? .classList.remove('active');
+                    for (let v = 0; v < NUM_VOICES; v++) {
+                        stepButtons[v][lastIndicatorUpdate.step] ? .classList.remove('playing');
+                    }
+                }
+            }
+            if (stepIndex >= 0 && stepIndex < NUM_STEPS) {
+                stepIndicators[stepIndex] ? .classList.add('active');
+                for (let v = 0; v < NUM_VOICES; v++) {
+                    stepButtons[v][stepIndex] ? .classList.add('playing');
+                }
+            }
+            const indicatorOffDelay = (sequencer.stepDuration * 1000) * 0.8;
+            lastIndicatorUpdate.step = stepIndex;
+            lastIndicatorUpdate.timeoutId = setTimeout(() => {
+                if (stepIndex >= 0 && stepIndex < NUM_STEPS) {
+                    stepIndicators[stepIndex] ? .classList.remove('active');
+                    for (let v = 0; v < NUM_VOICES; v++) {
+                        stepButtons[v][stepIndex] ? .classList.remove('playing');
+                    }
+                }
+                lastIndicatorUpdate.timeoutId = null;
+            }, indicatorOffDelay);
+        }
+
+        function clearStepIndicators() {
+            if (lastIndicatorUpdate.timeoutId) {
+                clearTimeout(lastIndicatorUpdate.timeoutId);
+                lastIndicatorUpdate.timeoutId = null;
+            }
+            stepIndicators.forEach(ind => ind.classList.remove('active'));
+            stepButtons.flat().forEach(btn => btn.classList.remove('playing'));
+            lastIndicatorUpdate.step = -1;
+        }
+
+        // ----- EVENT LISTENERS -----
+
+        // -- Keyboard Input (unchanged) --
+        document.addEventListener('keydown', async(e) => {
+            if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlayStop();
+                return;
+            }
+            const voiceIndex = keyToVoiceIndex[e.code];
+            if (voiceIndex !== undefined) {
+                e.preventDefault();
+                let canPlay = isAudioResumed;
+                if (!canPlay && isAudioInitialized) canPlay = await ensureAudioContextResumed();
+                if (canPlay) {
+                    triggerDrumSound(voiceIndex, audioContext.currentTime);
+                    const light = indicatorLights[voiceIndex];
+                    if (light) {
+                        light.classList.add('active');
+                        setTimeout(() => light.classList.remove('active'), 100);
+                    }
+                } else {
+                    console.warn("Audio context not running for manual trigger.");
+                }
+                return;
+            }
+            if (document.activeElement && document.activeElement.classList.contains('knob')) {
+                const focusedKnob = document.activeElement;
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    handleKnobArrowKey(focusedKnob, e.key === 'ArrowLeft' ? -1 : 1, e.shiftKey);
+                } else if (e.key >= '0' && e.key <= '9') {
+                    e.preventDefault();
+                    handleKnobNumberKey(focusedKnob, parseInt(e.key, 10));
+                }
+            }
         });
-         tempoInput.addEventListener('input', (e) => {
-             const currentVal = parseFloat(e.target.value);
-             if (!isNaN(currentVal)) { sequencer.tempo = Math.max(30, Math.min(300, currentVal)); }
-         });
 
-        // --- MODIFIED: Use event delegation for step buttons ---
-        sequencerGrid.addEventListener('mousedown', handleSeqGridMouseDown);
-        // We no longer add click listeners individually in createSequencerGridUI
-        // --- END MODIFIED ---
-    }
-
-    // -- General Interaction Listener for Audio Context --
-    // (setupGeneralInteractionListener unchanged)
-    function setupGeneralInteractionListener(){drumMachinePanel.addEventListener('pointerdown',async()=>{if(!isAudioResumed&&isAudioInitialized){await ensureAudioContextResumed();}},{capture:true,once:true}); sequencerPanel.addEventListener('pointerdown',async()=>{if(!isAudioResumed&&isAudioInitialized){await ensureAudioContextResumed();}},{capture:true,once:true});}
-
-    // --- INITIALIZATION ---
-    document.addEventListener('DOMContentLoaded', async () => { // (unchanged)
-        knobs = drumMachinePanel.querySelectorAll('.knob');
-        createSequencerGridUI();
-        await initAudio();
-        if (isAudioInitialized) {
-            updateAllKnobs(true);
-            setupKnobListeners();
-            setupSequencerListeners(); // Sets up transport and delegated step listeners
-            setupGeneralInteractionListener();
-            console.log("JS Drum Synth Ready. Press A/S/D/F to play manually, Spacebar for sequencer.");
-            if (audioContext?.state === 'suspended') {
-                console.warn("REMINDER: Click panel or press key/space to enable audio.");
+        // --- Knob Keyboard Control Helpers (unchanged) ---
+        function getKnobPercentage(knob) {
+            const min = parseFloat(knob.dataset.min);
+            const max = parseFloat(knob.dataset.max);
+            const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null;
+            const isLog = knob.dataset.curve === 'log' && min > 0;
+            let currentValueStr = knob.dataset.value;
+            let percentage = 0.5;
+            if (currentValueStr === undefined || currentValueStr === null) return 0.5;
+            if (steps) {
+                const numSteps = steps.length;
+                const stepIndex = parseInt(currentValueStr);
+                percentage = numSteps > 1 ? stepIndex / (numSteps - 1) : 0.5;
+            } else {
+                let currentValue = parseFloat(knob.dataset.actualValue || currentValueStr);
+                if (isLog) {
+                    if (currentValue <= min) percentage = 0;
+                    else if (currentValue >= max) percentage = 1;
+                    else percentage = Math.log(currentValue / min) / Math.log(max / min);
+                } else {
+                    const range = max - min;
+                    percentage = range > 0 ? (currentValue - min) / range : 0.5;
+                }
             }
-        } else {
-            console.error("Drum Synth initialization failed.");
+            return Math.max(0, Math.min(1, isNaN(percentage) ? 0.5 : percentage));
         }
-    });
 
-</script>
+        function handleKnobArrowKey(knob, direction, isShift) {
+            const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null;
+            const min = parseFloat(knob.dataset.min);
+            const max = parseFloat(knob.dataset.max);
+            const isLog = knob.dataset.curve === 'log' && min > 0;
+            let currentPercentage = getKnobPercentage(knob);
+            let newValue;
+            if (steps) {
+                const numSteps = steps.length;
+                let currentStepIndex = Math.round(currentPercentage * (numSteps - 1));
+                let stepChange = direction * (isShift ? 2 : 1);
+                newValue = Math.max(0, Math.min(numSteps - 1, currentStepIndex + stepChange));
+            } else {
+                let percentageChange = direction * (isShift ? 0.1 : 0.01);
+                let newPercentage = Math.max(0, Math.min(1, currentPercentage + percentageChange));
+                if (isLog) {
+                    newValue = min * Math.pow(max / min, newPercentage);
+                } else {
+                    const range = max - min;
+                    newValue = min + newPercentage * range;
+                }
+                newValue = Math.max(min, Math.min(max, newValue));
+            }
+            updateParameterFromKnob(knob, newValue);
+        }
+
+        function handleKnobNumberKey(knob, number) {
+            const steps = knob.dataset.steps ? knob.dataset.steps.split(',') : null;
+            const min = parseFloat(knob.dataset.min);
+            const max = parseFloat(knob.dataset.max);
+            const isLog = knob.dataset.curve === 'log' && min > 0;
+            let targetValue;
+            if (steps) {
+                const numSteps = steps.length;
+                if (numSteps === 0) return;
+                let targetIndex = (number === 0) ? numSteps - 1 : number - 1;
+                targetValue = Math.max(0, Math.min(numSteps - 1, targetIndex));
+            } else {
+                let currentActualValue = parseFloat(knob.dataset.actualValue || knob.dataset.value || '0');
+                const epsilon = 1e-7;
+                let targetPercentage = (number === 0) ? (Math.abs(currentActualValue - min) < epsilon ? 1.0 : 0.0) :
+                    number / 10.0;
+                if (isLog) {
+                    targetValue = min * Math.pow(max / min, targetPercentage);
+                } else {
+                    const range = max - min;
+                    targetValue = min + targetPercentage * range;
+                }
+                targetValue = Math.max(min, Math.min(max, targetValue));
+            }
+            updateParameterFromKnob(knob, targetValue);
+        }
+
+        // -- Mouse Input for Knobs --
+        // (isDragging, dragKnob, startY, startValuePercentage, handleKnobMouseMove, stopDrag, setupKnobListeners remain the same)
+        let isDragging = false;
+        let dragKnob = null;
+        let startY = 0;
+        let startValuePercentage = 0;
+
+        function handleKnobMouseMove(e) {
+            if (!isDragging || !dragKnob) return;
+            e.preventDefault();
+            const currentY = e.clientY;
+            const deltaY = startY - currentY;
+            const steps = dragKnob.dataset.steps ? dragKnob.dataset.steps.split(',') : null;
+            const min = parseFloat(dragKnob.dataset.min);
+            const max = parseFloat(dragKnob.dataset.max);
+            const isLog = dragKnob.dataset.curve === 'log' && min > 0;
+            let newValue;
+            if (steps) {
+                const pixelsPerStep = 20;
+                const totalSteps = steps.length;
+                if (totalSteps <= 1) return;
+                const totalDragPixelsForRange = pixelsPerStep * (totalSteps - 1);
+                const percentageChange = totalDragPixelsForRange > 0 ? (deltaY / totalDragPixelsForRange) : 0;
+                let newPercentage = Math.max(0, Math.min(1, startValuePercentage + percentageChange));
+                newValue = Math.round(newPercentage * (totalSteps - 1));
+            } else {
+                const dragRangePixels = 150;
+                const deltaPercentage = deltaY / dragRangePixels;
+                let newPercentage = Math.max(0, Math.min(1, startValuePercentage + deltaPercentage));
+                if (isLog) {
+                    const epsilon = 1e-9;
+                    const clampedPercentage = Math.max(epsilon, Math.min(1 - epsilon, newPercentage));
+                    if (min > 0 && max > min) newValue = min * Math.pow(max / min, clampedPercentage);
+                    else newValue = (newPercentage > 0.5) ? max : min;
+                } else {
+                    const range = max - min;
+                    newValue = min + newPercentage * range;
+                }
+                newValue = Math.max(min, Math.min(max, newValue));
+            }
+            let currentValueInDataStr = dragKnob.dataset.value;
+            const tolerance = 1e-6;
+            if (steps) {
+                if (newValue !== parseInt(currentValueInDataStr)) {
+                    updateParameterFromKnob(dragKnob, newValue);
+                }
+            } else {
+                if (Math.abs(newValue - parseFloat(currentValueInDataStr)) > tolerance) {
+                    updateParameterFromKnob(dragKnob, newValue);
+                }
+            }
+        }
+
+        function stopDrag() {
+            if (isDragging && dragKnob) {
+                dragKnob.closest('.control-group') ? .classList.remove('interacting');
+            }
+            if (isDragging) {
+                isDragging = false;
+                dragKnob = null;
+                document.body.classList.remove('dragging');
+                document.removeEventListener('mousemove', handleKnobMouseMove);
+                document.removeEventListener('mouseup', stopDrag);
+                document.removeEventListener('mouseleave', stopDrag);
+            }
+        }
+
+        function setupKnobListeners() {
+            if (!knobs) knobs = drumMachinePanel.querySelectorAll('.knob');
+            knobs.forEach(knob => {
+                const controlGroup = knob.closest('.control-group');
+                const isStepped = knob.hasAttribute('data-steps');
+                const valueDisplayId = knob.id + '-value';
+                const valueDisplay = document.getElementById(valueDisplayId);
+                if (!isStepped && valueDisplay) {
+                    knob.addEventListener('focus', () => {
+                        const currentVal = parseFloat(knob.dataset.actualValue || knob.dataset.value ||
+                            '0');
+                        updateKnobValueDisplay(knob, currentVal);
+                        valueDisplay.style.display = 'inline-block';
+                    });
+                    knob.addEventListener('blur', () => {
+                        if (!isDragging || dragKnob !== knob) {
+                            valueDisplay.style.display = 'none';
+                        }
+                        controlGroup ? .classList.remove('interacting');
+                    });
+                }
+                knob.addEventListener('mousedown', async(e) => {
+                    let canInteract = isAudioResumed;
+                    if (!canInteract && isAudioInitialized) canInteract =
+                        await ensureAudioContextResumed();
+                    if (!isAudioInitialized || !canInteract) return;
+                    e.preventDefault();
+                    isDragging = true;
+                    dragKnob = knob;
+                    startY = e.clientY;
+                    startValuePercentage = getKnobPercentage(knob);
+                    knob.focus();
+                    controlGroup ? .classList.add('interacting');
+                    if (!isStepped && valueDisplay) {
+                        const currentVal = parseFloat(knob.dataset.actualValue || knob.dataset
+                            .value || '0');
+                        updateKnobValueDisplay(knob, currentVal);
+                        valueDisplay.style.display = 'inline-block';
+                    }
+                    document.body.classList.add('dragging');
+                    document.addEventListener('mousemove', handleKnobMouseMove);
+                    document.addEventListener('mouseup', stopDrag);
+                    document.addEventListener('mouseleave', stopDrag);
+                });
+                knob.addEventListener('dblclick', async(e) => {
+                    let canInteract = isAudioResumed;
+                    if (!canInteract && isAudioInitialized) canInteract =
+                        await ensureAudioContextResumed();
+                    if (!isAudioInitialized || !canInteract) return;
+                    const defaultValueAttr = knob.getAttribute('data-value');
+                    if (defaultValueAttr !== null) {
+                        updateParameterFromKnob(knob, defaultValueAttr);
+                        if (!isStepped && valueDisplay) {
+                            const defaultVal = parseFloat(defaultValueAttr);
+                            updateKnobValueDisplay(knob, defaultVal);
+                        }
+                    }
+                });
+            });
+        }
+
+        // --- Sequencer UI Event Listeners ---
+
+        // NEW: Handlers for step drag functionality
+        function handleSeqGridMouseDown(e) {
+            if (!e.target.classList.contains('step-button')) return;
+
+            e.preventDefault(); // Prevent text selection/dragging image ghost
+            isDraggingSeqStep = true;
+
+            const button = e.target;
+            const voiceIndex = parseInt(button.dataset.voice);
+            const stepIndex = parseInt(button.dataset.step);
+
+            // Toggle the clicked step first
+            const initialState = getStepState(voiceIndex, stepIndex);
+            const newState = !initialState;
+            setStepState(voiceIndex, stepIndex, newState);
+
+            // Determine drag mode
+            dragSeqStepMode = newState ? 'activate' : 'deactivate';
+            dragSeqStepVoice = voiceIndex;
+
+            // Add listeners to the document to track mouse movement anywhere
+            document.addEventListener('mousemove', handleSeqGridMouseMove);
+            document.addEventListener('mouseup', handleSeqGridMouseUp, {
+                once: true
+            }); // Remove after first mouseup
+        }
+
+        function handleSeqGridMouseMove(e) {
+            if (!isDraggingSeqStep) return;
+
+            // Check if the element being hovered over is a step button
+            const targetElement = document.elementFromPoint(e.clientX, e.clientY);
+            if (!targetElement || !targetElement.classList.contains('step-button')) {
+                return; // Not hovering over a step button
+            }
+
+            const button = targetElement;
+            const voiceIndex = parseInt(button.dataset.voice);
+            const stepIndex = parseInt(button.dataset.step);
+
+            // Only apply if it's in the same voice row
+            if (voiceIndex === dragSeqStepVoice) {
+                const currentState = getStepState(voiceIndex, stepIndex);
+                const shouldActivate = dragSeqStepMode === 'activate';
+
+                // Apply the drag mode only if the button is not already in the desired state
+                if (shouldActivate && !currentState) {
+                    setStepState(voiceIndex, stepIndex, true);
+                } else if (!shouldActivate && currentState) {
+                    setStepState(voiceIndex, stepIndex, false);
+                }
+            }
+        }
+
+        function handleSeqGridMouseUp(e) {
+            if (isDraggingSeqStep) {
+                isDraggingSeqStep = false;
+                dragSeqStepMode = null;
+                dragSeqStepVoice = -1;
+                document.removeEventListener('mousemove', handleSeqGridMouseMove);
+                // The mouseup listener on document is already set to {once: true}
+            }
+        }
+        // --- END NEW HANDLERS ---
+
+        function setupSequencerListeners() {
+            playStopButton.addEventListener('click', togglePlayStop);
+            resetButton.addEventListener('click', resetSequencer);
+            tempoInput.addEventListener('change', (e) => {
+                const newTempo = parseFloat(e.target.value);
+                if (!isNaN(newTempo)) {
+                    updateTempo(newTempo);
+                } else {
+                    tempoInput.value = sequencer.tempo;
+                }
+            });
+            tempoInput.addEventListener('input', (e) => {
+                const currentVal = parseFloat(e.target.value);
+                if (!isNaN(currentVal)) {
+                    sequencer.tempo = Math.max(30, Math.min(300, currentVal));
+                }
+            });
+
+            // --- MODIFIED: Use event delegation for step buttons ---
+            sequencerGrid.addEventListener('mousedown', handleSeqGridMouseDown);
+            // We no longer add click listeners individually in createSequencerGridUI
+            // --- END MODIFIED ---
+        }
+
+        // -- General Interaction Listener for Audio Context --
+        // (setupGeneralInteractionListener unchanged)
+        function setupGeneralInteractionListener() {
+            drumMachinePanel.addEventListener('pointerdown', async() => {
+                if (!isAudioResumed && isAudioInitialized) {
+                    await ensureAudioContextResumed();
+                }
+            }, {
+                capture: true,
+                once: true
+            });
+            sequencerPanel.addEventListener('pointerdown', async() => {
+                if (!isAudioResumed && isAudioInitialized) {
+                    await ensureAudioContextResumed();
+                }
+            }, {
+                capture: true,
+                once: true
+            });
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', async() => { // (unchanged)
+            knobs = drumMachinePanel.querySelectorAll('.knob');
+            createSequencerGridUI();
+            await initAudio();
+            if (isAudioInitialized) {
+                updateAllKnobs(true);
+                setupKnobListeners();
+                setupSequencerListeners(); // Sets up transport and delegated step listeners
+                setupGeneralInteractionListener();
+                console.log("JS Drum Synth Ready. Press A/S/D/F to play manually, Spacebar for sequencer.");
+                if (audioContext ? .state === 'suspended') {
+                    console.warn("REMINDER: Click panel or press key/space to enable audio.");
+                }
+            } else {
+                console.error("Drum Synth initialization failed.");
+            }
+        });
+    </script>
 </body>
+
 </html>
